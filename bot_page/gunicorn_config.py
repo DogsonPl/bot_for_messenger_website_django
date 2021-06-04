@@ -9,7 +9,7 @@ reload = True
 
 shared_memory = shared_memory.ShareableList([0, 0, 1e10])
 """
-:var shared_memory[0] -> tells if django cache started 
+:var shared_memory[0] --> tells if django cache started 
 :var shared_memory[1] --> tells if scheduler tasks are running
 :var shared_memory[2] --> id of worker which is running scheduler tasks
 """
