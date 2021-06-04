@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block title %} Kasyno {% endblock %}
+
+{% block scripts %}
+<script src="{% static 'casino/js/plugins/bootstrap-notify.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<main>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <header>
+                       <h3>Twoje pieniądze</h3>
+                    </header>
+                </div>
+                <div class="card-body pt-0">
+                    <p>Posiadasz <span id="user_money">{{player.money | floatformat:2}}</span> monet</p>
+                    <p>Twój daily strike wynosi <span id="daily_strike">{{player.daily_strike}}</span></p>
+                    {% if player.take_daily == 0 %}
+                    <button class="btn btn-primary" id="daily_button" type="button">Odbierz daily</button>
+                    {% else %}
+                    <button class="btn btn-primary" id="daily_button_disabled" type="button" disabled>Odebrano dzisiaj daily</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <form id="bet">
+                        {% csrf_token %}
+                        {{ bet_form | crispy }}
+                        <div class="row">
+                            <div class="col">
+                                <button class="btn btn-primary" id="bet_button" type="submit">Betuj</button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-primary" type="button" onclick="max()">Max</button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-primary" type="button" onclick="multiply()">2X</button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-primary" type="button" onclick="divide()">1/2X</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="bet_info_div" class="alert" role="alert" hidden><span id="bet_info"></span></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <form id="jackpot">
+                        {% csrf_token %}
+                        {{ jackpot_form | crispy }}
+                        <button class="btn btn-primary" id="jackpot_button" type="submit">Kup bilety</button>
+                    </form>
+                    <p>Twoja liczba biletów: <span id="user_tickets">{{ user_tickets }}</span></p>
+                    <p>Suma wszystkich biletów: <span id="total_tickets">{{ total_tickets }}</span></p>
+                    <!-- add "fill" (bi-info-circle-fill) in class name if you want fill info icon with color -->
+                    <div><i class="bi bi-info-circle" id="jackpot_info" style="color: red;"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Twoje ostatnie bety</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table tablesorter">
+                            <thead class="text-primary">
+                            <tr>
+                                <th scope="col">
+                                    Data
+                                </th>
+                                <th scope="col">
+                                    Obstawione dogecoiny
+                                </th>
+                                <th scope="col">
+                                    Twoja liczba
+                                </th>
+                                <th scope="col">
+                                    Wylosowana liczba
+                                </th>
+                                <th scope="col">
+                                    Wynik
+                                </th>
+                                <th class="text-center" scope="col">
+                                    Profit dogecoinów
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody id="user_bets_table">
+                            {% for bet in user_bets %}
+                            <tr>
+                                <td>
+                                    {{ bet.date | naturaltime }}
+                                </td>
+                                <td>
+                                    {{ bet.amount | floatformat:5}}
+                                </td>
+                                <td>
+                                    {{ bet.user_number }}
+                                </td>
+                                <td>
+                                    {{ bet.drown_number }}
+                                </td>
+                                <td>
+                                    {% if bet.win == "" %}
+                                    <span></span>
+                                    {% elif bet.win %}
+                                    <span class="text-success">Wygrana</span>
+                                    {% else %}
+                                    <span class="text-danger">Przegrana</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="{% if bet.win %} text-success {% else %} text-danger {% endif %}">{{ bet.money | floatformat:3 }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Ostatnie bety (live)</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table tablesorter">
+                            <thead class="text-primary">
+                            <tr>
+                                <th scope="col">
+                                    Gracz
+                                </th>
+                                <th scope="col">
+                                    Obstawione dogecoiny
+                                </th>
+                                <th scope="col">
+                                    Liczba gracza
+                                </th>
+                                <th scope="col">
+                                    Wylosowana liczba
+                                </th>
+                                <th scope="col">
+                                    Wynik
+                                </th>
+                                <th class="text-center" scope="col">
+                                    Profit dogecoinów
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for bet in last_bets %}
+                            <tr>
+                                <td>
+                                    {{ bet.player }}
+                                </td>
+                                <td>
+                                    {{ bet.amount | floatformat:5}}
+                                </td>
+                                <td>
+                                    {{ bet.user_number }}
+                                </td>
+                                <td>
+                                    {{ bet.drown_number }}
+                                </td>
+                                <td>
+                                    {% if bet.win %}
+                                    <span class="text-success">Wygrana</span>
+                                    {% else %}
+                                    <span class="text-danger">Przegrana</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="{% if bet.win %} text-success {% else %} text-danger {% endif %}">{{ bet.money | floatformat:3 }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="{% static 'casino/js/casino_ajax.js' %}"></script>
+<script src="{% static 'casino/js/update_last_bets_table.js' %}"></script>
+<script src="{% static 'casino/js/bet_buttons.js' %}"></script>
+
+<script>
+    $(document).ready(function(){
+        $("#jackpot_info").tooltip(
+            {title: `📑 Zasady:
+                    <ul class='text-left'><li class='text-dark'>Każdy bilet kosztuje 1 dogecoin</li>
+                    <li class='text-dark'>Jeden bilet to jeden los</li>
+                    <li class='text-dark'>Na końcu dnia jest losowanie, osoba której bilet zostanie wylosowany wygrywa dogecoiny (każdy kupiony bilet zwiększa pule nagród o jeden dogecoin)</li></ul>`,
+            html: true})
+})
+
+</script>
+{% endblock %}

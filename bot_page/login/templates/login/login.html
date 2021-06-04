@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} Logowanie {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 m-3">
+        <form method="post">
+            {% csrf_token %}
+            {{form | crispy}}
+            <button class="btn btn-primary mt-3" type="submit">Wyślij</button>
+        </form>
+         Nie masz konta? <a href="{% url 'account:register' %}">Zarejestruj się</a>
+         Zapomniałeś hasła? <a href="{% url 'reset_password' %}">Zresetuj hasło</a>
+    </div>
+</div>
+
+{% for message in messages %}
+<div class="alert alert-danger">
+    {{ message }}
+</div>
+{% endfor %}
+
+{% endblock %}

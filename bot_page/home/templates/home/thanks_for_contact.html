@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %} Kontakt {% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+
+<main>
+    <div class="row align-items-center">
+        <div class="col text-center justify-content-center">
+            <h1>Dziękujemy za kontakt. Odezwiemy się najszybciej jak to możliwe</h1>
+            <p id="timer">Przekierowanie na stronę główną za...</p>
+        </div>
+    </div>
+</main>
+
+<script type="text/javascript">
+    function timer()
+    {
+        time--
+        if(time>0)
+        {
+            timer_paragraph.innerHTML = "Przekierowanie na stronę główną za " + time
+            setTimeout(timer, 1000)
+        }
+        else
+        {
+        window.location.replace("{% url 'home:index' %}")
+        }
+    }
+    var time = 10
+    var timer_paragraph = document.getElementById("timer")
+    timer()
+</script>
+
+{% endblock %}

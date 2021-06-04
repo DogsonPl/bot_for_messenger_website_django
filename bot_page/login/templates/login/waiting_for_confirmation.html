@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'login/css/waiting_for_confirmation.css' %}">
+{% endblock %}
+
+{% block title %} Potwierdzenia maila {% endblock %}
+
+{% block content %}
+<div class="row" style="margin-top: 20vh;">
+    <div class="col text-center">
+        <h1 class="main_text">Czekanie na potwierdzenie maila który został wysłany na {{mail}}. Pamiętaj o sprawdzeniu folderu spam</h1>
+        <p class="help_text">Podałeś złego maila lub mail nie doszedł? <a href="{% url 'account:register' %}">Kliknij tutaj</a></p>
+    </div>
+</div>
+
+
+{% endblock %}

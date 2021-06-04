@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+{% load static %}
+<html lang="pl">
+    <head>
+        <title> {% block title %} {% endblock %}</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
+        <meta name="description" content="Jest to bot, który działa na messengerze. Posiada funkcje takie jak wysyłanie informacji o koronawirusie, kasyno i wiele więcej!">
+        <meta name="keywords" content="bot, messenger, dogson, kasyno">
+        <meta name="author" content="Dogson">
+        <!-- js scripts -->
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script src="{% static '/js/perfect-scrollbar.jquery.min.js' %}"></script>
+        {% block scripts %}
+        {% endblock %}
+        <!-- fonts and icons-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta Stencil">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.6/css/all.css">
+        <!-- css -->
+        <link rel="stylesheet" href="{% static 'css/black-dashboard.css' %}">
+        {% block styles %}
+        {% endblock %}
+    </head>
+
+    <body>
+        <div class="wrapper">
+            <div class="sidebar" style="display: none; !important">
+                <div class="sidebar-wrapper"></div>
+            </div>
+            <div class="main-panel">
+                <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+                    <a class="navbar-brand" href="{% url 'home:index' %}">Bot</a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar_collapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div id="navbar_collapse" class="collapse navbar-collapse justify-content-start">
+                        <div class="navbar-nav">
+                            <ul class="navbar-nav">
+                                <li class="nav-item {% if nav_bar == 'home' %}active{% endif %}">
+                                    <a class="nav-link" href="{% url 'home:index' %}">Strona główna</a>
+                                </li>
+                                <li class="nav-item {% if nav_bar == 'casino' %}active{% endif %}">
+                                    <a class="nav-link" href="{% url 'casino:index' %}">Kasyno</a>
+                                </li>
+                                <li class="nav-item {% if nav_bar == 'bot_info' %}active{% endif %}">
+                                    <a class="nav-link" href="{% url 'bot_info:index' %}">Informacje</a>
+                                </li>
+                                <li class="nav-item {% if nav_bar == 'contact' %}active{% endif %}">
+                                    <a class="nav-link" href="{% url 'home:contact' %}">Kontakt</a>
+                                </li>
+                            </ul>
+                        </div>
+                        {% if user.is_authenticated %}
+                            <div class="navbar-nav ml-auto">
+                                <div class="nav-item nav-link text-warning font-weight-bold">
+                                    {{ player.money | floatformat:2 }} dogów <i class="bi bi-wallet2"></i>
+                                </div>
+                                <div class="nav-item dropdown">
+                                    <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle user-action">
+                                        <i class="bi bi-person"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right bg-secondary text-white">
+                                        <a class="dropdown-item" href="{% url 'account:settings' %}">
+                                            <strong><i class="bi bi-gear"></i>Ustawienia</strong>
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="{% url 'account:logout' %}">
+                                            <strong><i class="bi bi-box-arrow-in-left"></i> Wyloguj się></strong>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a class="nav-item nav-link text-warning" href="{% url 'account:login' %}">
+                                <i class="bi bi-box-arrow-in-right"></i> Zaloguj się
+                            </a>
+                        {% endif %}
+                    </div>
+                </nav>
+
+                <div class="content">
+                    <div class="row">
+                        <div class="col">
+                            <div class="alert alert-danger">Jest to wersja beta bety strony i mogą występować błędy, łączenie dogów z kontem na jest w fazie beta</div>
+                        </div>
+                    </div>
+                    {% block content %}
+                    {% endblock %}
+                </div>
+
+            </div>
+        </div>
+
+        <script src="{% static '/js/black-dashboard.min.js' %}"></script>
+    </body>
+</html>

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Ustawienia {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <a href="{% url 'change_password' %}">Zmień hasło</a>
+    </div>
+</div>
+{% endblock %}

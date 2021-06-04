@@ -1,0 +1,12 @@
+[Unit]
+Description = Bot webpage
+After = network.target
+
+[Service]
+User = root
+Group = root
+WorkingDirectory = /root/bot_page
+ExecStart = gunicorn -c gunicorn_config.py bot_page.wsgi
+
+[Install]
+WantedBy = multi-user.target

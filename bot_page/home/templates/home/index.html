@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block title %} Strona główna {% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'home/css/home.css' %}">
+<link href='https://fonts.googleapis.com/css?family=Allerta Stencil' rel='stylesheet'>
+{% endblock %}
+
+{% block content %}
+<div class="stars1"></div>
+<div class="stars2"></div>
+<div class="stars3"></div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-success">
+            Wersja 0.3 (dev). Ostatnie aktualizacje na stronie:
+            <ul>
+                <li>Łaczenie dogów ze strony www ze stroną w internecie</li>
+                <li>Poprawa frontendu podczas rejestracji, ładniejszy email</li>
+                <li>DODANO CERTYFIKAT SSL 😎</li>
+                <li>Naprawa błędów</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<main>
+    <div class="row align-items-md-center ml-md-5 text-center">
+        <div class="col-md-6">
+            <header>
+                <h1 class="header_text mt-3">BOT MESSENGER</h1>
+            </header>
+            <article>
+                <p class="sub_header_text">Jest to strona, która powstała specjalnie na potrzeby bota. Niestety Facebook ciągle banował go za spam, wiec postanowiłem przenieść jego działalność na stronę Internetową. Mam zamiar dodawać ciągle jakieś funkcjonalności, wieć smiało możecie pisać z różnymi propozycjami </p>
+            </article>
+        </div>
+        <div class="col-md-5 offset-md-1">
+            <img class="img-fluid" src="{% static 'images/logo.png' %}" alt="logo">
+        </div>
+    </div>
+</main>
+
+{% endblock %}

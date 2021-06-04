@@ -1,0 +1,307 @@
+<!-- credits to:  https://github.com/prantho-kumer/account-confirmation-email-template -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pl">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Potwierdź swoje konto</title>
+	<style type="text/css">
+		#outlook a {
+			padding: 0;
+		}
+
+		body {
+			width: 100% !important;
+			-webkit-text-size-adjust: 100%;
+			-ms-text-size-adjust: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		.ExternalClass {
+			width: 100%;
+		}
+
+		.ExternalClass,
+		.ExternalClass p,
+		.ExternalClass span,
+		.ExternalClass font,
+		.ExternalClass td,
+		.ExternalClass div {
+			line-height: 100%;
+		}
+
+		#backgroundTable {
+			margin: 0;
+			padding: 0;
+			width: 100% !important;
+			line-height: 100% !important;
+		}
+
+		img {
+			outline: none;
+			text-decoration: none;
+			-ms-interpolation-mode: bicubic;
+		}
+
+		a img {
+			border: none;
+		}
+
+		.image_fix {
+			display: block;
+		}
+
+		p {
+			margin: 1em 0;
+		}
+
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			color: black !important;
+		}
+
+		h1 a,
+		h2 a,
+		h3 a,
+		h4 a,
+		h5 a,
+		h6 a {
+			color: blue !important;
+		}
+
+		h1 a:active,
+		h2 a:active,
+		h3 a:active,
+		h4 a:active,
+		h5 a:active,
+		h6 a:active {
+			color: red !important;
+		}
+
+		h1 a:visited,
+		h2 a:visited,
+		h3 a:visited,
+		h4 a:visited,
+		h5 a:visited,
+		h6 a:visited {
+			color: purple !important;
+		}
+
+		table td {
+			border-collapse: collapse;
+		}
+
+		table {
+			border-collapse: collapse;
+			mso-table-lspace: 0pt;
+			mso-table-rspace: 0pt;
+		}
+
+		a {
+			color: orange;
+		}
+
+		@media only screen and (max-device-width: 480px) {
+
+			a[href^="tel"],
+			a[href^="sms"] {
+				text-decoration: none;
+				color: black;
+				/* or whatever your want */
+				pointer-events: none;
+				cursor: default;
+			}
+
+			.mobile_link a[href^="tel"],
+			.mobile_link a[href^="sms"] {
+				text-decoration: default;
+				color: orange !important;
+				/* or whatever your want */
+				pointer-events: auto;
+				cursor: default;
+			}
+		}
+
+		@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+
+			a[href^="tel"],
+			a[href^="sms"] {
+				text-decoration: none;
+				color: blue;
+				pointer-events: none;
+				cursor: default;
+			}
+
+			.mobile_link a[href^="tel"],
+			.mobile_link a[href^="sms"] {
+				text-decoration: default;
+				color: orange !important;
+				pointer-events: auto;
+				cursor: default;
+			}
+		}
+
+		/* small screen */
+		@media only screen and (min-device-width: 576px) and (max-device-width: 767px) {
+				{}
+		}
+
+
+		/* extra small screen */
+		@media only screen and (min-device-width: 320px) and (max-device-width: 575.99px) {
+
+			* {
+				font-size: 13px;
+
+			}
+
+			.main_table {
+				padding: 50px 0 !important;
+			}
+
+			.welcome_secton {
+				margin-top: 15px !important;
+			}
+
+			.header_img_wrapper img {
+				width: 5em !important;
+			}
+
+			img {
+				width: 10px;
+			}
+
+			.hello,
+			.name {
+				margin: 0 !important;
+			}
+
+			.congratulations {
+				margin: 5px 0 !important;
+			}
+
+			.button_wrapper {
+				margin: 30px 0 !important;
+			}
+
+		}
+
+
+		@media only screen and (-webkit-min-device-pixel-ratio: 2) {
+			/* Put your iPhone 4g styles in here */
+		}
+
+		@media only screen and (-webkit-device-pixel-ratio:.75) {
+			/* Put CSS for low density (ldpi) Android layouts in here */
+		}
+
+		@media only screen and (-webkit-device-pixel-ratio:1) {
+			/* Put CSS for medium density (mdpi) Android layouts in here */
+		}
+
+		@media only screen and (-webkit-device-pixel-ratio:1.5) {
+			/* Put CSS for high density (hdpi) Android layouts in here */
+		}
+	</style>
+	<!--[if IEMobile 7]>
+	<style type="text/css">
+		/* Targeting Windows Mobile */
+	</style>
+	<![endif]-->
+	<!--[if gte mso 9]>
+	<style>
+		/* Target Outlook 2007 and 2010 */
+	</style>
+	<![endif]-->
+</head>
+
+<body>
+	<div class="email_wrapper" style="background-color:#404040; padding: 50px 0;">
+		<table cellpadding="0" cellspacing="0" border="0" class="main_table" style="width: 100%; max-width: 600px; margin: auto; text-align: center; background-color: #ffffff;border-collapse: separate; padding: 6.25rem 0;">
+			<tr>
+				<td>
+					<!-- head tick section -->
+					<table cellpadding="0" cellspacing="0" border="0" align="center">
+						<tr>
+							<td width="200" valign="top">
+								<div class="header_img_wrapper"><img src="https://i.imgur.com/75l1feO.png" alt="tick mark" style=" width: 6.25rem;"></div>
+							</td>
+						</tr>
+					</table>
+					<!--/	head tick section -->
+					<!-- welcome message section -->
+					<table cellpadding="0" cellspacing="0" border="0" align="center" class="welcome_secton" style="margin-top: 30px;">
+						<tr>
+							<td width="200" valign="top">
+								<h2 class="hello" style="font-family: sans-serif; font-weight: 300; font-size: 28px; color: #4b4b4c !important; margin: 5px 0 ;">
+                                    Witaj!
+                                </h2>
+							</td>
+						</tr>
+						<!-- name -->
+						<tr>
+							<td width="200" valign="top">
+								<h2 class="name" style="font-family: sans-serif; font-weight: 300; font-size: 2rem; color: #4b4b4c !important; margin: 5px 0 ;">
+                                    {{ username }}
+                                </h2>
+							</td>
+						</tr>
+						<!-- congratulation -->
+						<tr>
+							<td width="200" valign="top">
+								<h1 class="congratulations" style="font-family: sans-serif;font-weight: 700; font-size: 2.625rem; color: #4b4b4c !important; margin: 15px 0 ;">
+                                    Konto zostało założone
+                                </h1>
+							</td>
+						</tr>
+						<!-- message -->
+						<tr>
+							<td width="100%" valign="top">
+								<p style="font-family: sans-serif; font-weight: 400; font-size: 1.125rem; color: #4b4b4c !important; margin: 10px 0 !important;">
+                                    Kliknij w link by potwiedzić maila i dokończyć rejestrację konta
+                                </p>
+							</td>
+						</tr>
+					</table>
+					<!--/	welcome message section -->
+					<!-- button section -->
+					<table cellpadding="0" cellspacing="0" border="0" align="center">
+						<tr>
+							<td width="100%" valign="top">
+								<div class="button_wrapper" style="margin: 50px 0;">
+                                    <a href="{{ domain }}{% url 'account:activate' uidb64=uid token=token %}" style="font-family: sans-serif; font-size: 1.375rem; color: #ffffff; background-color: #8dc63f; text-decoration: none; text-transform: uppercase; padding: 1.0625rem 2.3125rem; border-radius: 50px;">
+                                        Potwiedź maila
+                                    </a>
+                                </div>
+							</td>
+						</tr>
+					</table>
+					<!--/	button section -->
+					<!-- info section -->
+					<table cellpadding="0" cellspacing="0" border="0" align="center">
+						<tr>
+							<td width="100%" valign="top">
+								<div>
+									<p style="font-family: sans-serif; color: #4b4b4c !important; font-size: 1.125rem; margin: 10px 0 !important;">
+                                        Jeśli nie zakładałeś konta na https://dogson.ovh zignoruj tego maila
+                                    </p>
+								</div>
+							</td>
+						</tr>
+					</table>
+					<!--/	info section -->
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+
+</html>

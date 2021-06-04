@@ -1,0 +1,9 @@
+django
+apscheduler
+django-apscheduler
+django-cleanup
+django-crispy-forms
+django-hcaptcha
+gunicorn
+mysql
+mysqlclient

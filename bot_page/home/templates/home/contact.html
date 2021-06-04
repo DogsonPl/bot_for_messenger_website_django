@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} Kontakt {% endblock %}
+
+{% block content %}
+
+<main>
+    <div class="row">
+        <div class="col-md-6 m-3">
+            <form method="post">
+                {% csrf_token %}
+                {{form | crispy}}
+                <button class="btn btn-primary" type="submit">Wyślij</button>
+            </form>
+        </div>
+    </div>
+    <div>
+        <div class="row">
+            <div class="col-md-6 m-3">
+                {% for message in messages %}
+                <div class="alert alert-danger"> {{ message }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}
