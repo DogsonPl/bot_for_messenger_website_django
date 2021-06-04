@@ -1,4 +1,5 @@
 const user_money = document.getElementById("user_money")
+const user_money_navbar = document.getElementById("user_money_navbar")
 const daily_strike = document.getElementById("daily_strike")
 const daily_button = document.getElementById("daily_button")
 const bet_button = document.getElementById("bet_button")
@@ -26,6 +27,7 @@ $("#daily_button").on("click", function(event){
         success: function(response){
             let user_money_formatted = parseFloat(response["player_money"]).toFixed(2)
             user_money.innerHTML = user_money_formatted
+            user_money_navbar.innerHTML = user_money_formatted
             daily_strike.innerHTML = response["daily_strike"]
             send_modal_message(response["received"])
             daily_button.textContent = "Odebrano już dzisiaj daily"
@@ -72,6 +74,7 @@ $("#bet").on("submit", function(event){
             bet_info.innerHTML = response["message"]
             let user_money_formatted = parseFloat(response["player_money"]).toFixed(2)
             user_money.innerHTML = user_money_formatted
+            user_money_navbar.innerHTML = user_money_formatted
             bet_button.disabled = false
         },
         error: function(error){
@@ -104,6 +107,7 @@ $("#jackpot").on("submit", function(event){
             send_modal_message(modal_message)
             let user_money_formatted = parseFloat(response["player_money"]).toFixed(2)
             user_money.innerHTML = user_money_formatted
+            user_money_navbar.innerHTML = user_money_formatted
             total_tickets.innerHTML = parseInt(response["tickets"]) + parseInt(total_tickets.textContent)
             user_tickets.innerHTML = parseInt(response["tickets"]) + parseInt(user_tickets.textContent)
             jackpot_button.disabled = false
