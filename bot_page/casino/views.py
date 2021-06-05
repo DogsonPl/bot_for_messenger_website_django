@@ -27,7 +27,10 @@ def index(request):
         if len(user_bets) == 0:
             user_bets = EmptyBet
         last_bets = last_bets[:10]
-        total_tickets = Jackpot.objects.aggregate(total=Sum("tickets"))["total"]
+        try:
+            total_tickets = int(Jackpot.objects.aggregate(total=Sum("tickets"))["total"])
+        except TypeError:
+            total_tickets = 0
         try:
             user_tickets = Jackpot.objects.get(player=player)
         except ObjectDoesNotExist:
@@ -50,7 +53,7 @@ def index(request):
 
 
 def set_daily(request):
-    if request.is_ajax() and request.user.is_authenticated:
+    if request.method == "POST" and request.user.is_authenticated:
         player = CasinoPlayers.objects.get(user=request.user)
         message = casino_actions.set_daily(player)
         return JsonResponse({"player_money": player.money, "daily_strike": player.daily_strike, "received": message})
@@ -59,7 +62,7 @@ def set_daily(request):
 
 
 def make_bet(request):
-    if request.is_ajax() and request.user.is_authenticated:
+    if request.method == "POST" and request.user.is_authenticated:
         try:
             wage = abs(float(request.POST["bet_money"]))
             percent_to_win = abs(int(request.POST["percent_to_win"]))
@@ -85,7 +88,7 @@ def make_bet(request):
 
 @transaction.atomic
 def jackpot_buy(request):
-    if request.is_ajax() and request.user.is_authenticated:
+    if request.method == "POST" and request.user.is_authenticated:
         player = CasinoPlayers.objects.get(user=request.user)
         tickets_to_buy = abs(int(request.POST["tickets"]))
         if player.money > tickets_to_buy:
