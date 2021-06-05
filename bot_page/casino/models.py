@@ -20,7 +20,10 @@ class CasinoPlayers(models.Model):
         db_table = "casino_players"
 
     def __str__(self):
-        return str(self.user)
+        if self.user:
+            return str(self.user)
+        else:
+            return str(self.fb_name)
 
 
 class Jackpot(models.Model):
