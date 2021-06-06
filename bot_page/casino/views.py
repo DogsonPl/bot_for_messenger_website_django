@@ -106,9 +106,12 @@ def make_bet_fb(request):
         wage = float(request.POST["bet_money"])
         percent_to_win = int(request.POST["percent_to_win"])
         player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
-        result, message, won_money, lucky_number = casino_actions.make_bet(player, percent_to_win, wage)
-        BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=lucky_number,
-                                   amount=wage, win=result, money=won_money)
+        if player.money < wage or not 1 <= percent_to_win <= 90:
+            message = "🚫 Nie masz wystarczająco pieniędzy"
+        else:
+            result, message, won_money, lucky_number = casino_actions.make_bet(player, percent_to_win, wage)
+            BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=lucky_number,
+                                       amount=wage, win=result, money=won_money)
 
         return JsonResponse({"message": message})
     return JsonResponse({"status": "forbidden"})
