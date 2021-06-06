@@ -2,6 +2,7 @@ from django.db import transaction
 from django.db.models import Sum, ObjectDoesNotExist
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import CasinoPlayers, BetsHistory, Jackpot
 from .forms import BetForm, JackpotForm
@@ -82,6 +83,22 @@ def make_bet(request):
             return JsonResponse({"status": status, "message": message, "player_money": player.money,
                                  "date": "Now", "amount": wage, "user_number": percent_to_win,
                                  "drown_number": lucky_number, "win": result, "money": bet.money})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
+@csrf_exempt
+def make_bet_fb(request):
+    if request.method == "POST":
+        wage = float(request.POST["bet_money"])
+        percent_to_win = int(request.POST["percent_to_win"])
+        player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
+
+        result, message, won_money, lucky_number = casino_actions.make_bet(player, percent_to_win, wage)
+        BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=lucky_number,
+                                   amount=wage, win=result, money=won_money)
+
+        return JsonResponse({"message": message})
     else:
         return JsonResponse({"status": "forbidden"})
 
