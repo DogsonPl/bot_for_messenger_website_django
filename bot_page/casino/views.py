@@ -62,6 +62,16 @@ def set_daily(request):
         return JsonResponse({"status": "forbidden"})
 
 
+@csrf_exempt
+def set_daily_fb(request):
+    if request.method == "POST":
+        player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
+        message = casino_actions.set_daily(player)
+        return JsonResponse({"message": message})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
 def make_bet(request):
     if request.method == "POST" and request.user.is_authenticated:
         try:
