@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import CasinoPlayers, BetsHistory, Jackpot
 from .forms import BetForm, JackpotForm
+from .utils import check_ip
 from . import casino_actions
 
 
@@ -63,6 +64,7 @@ def set_daily(request):
 
 
 @csrf_exempt
+@check_ip
 def set_daily_fb(request):
     if request.method == "POST":
         player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
@@ -98,19 +100,18 @@ def make_bet(request):
 
 
 @csrf_exempt
+@check_ip
 def make_bet_fb(request):
     if request.method == "POST":
         wage = float(request.POST["bet_money"])
         percent_to_win = int(request.POST["percent_to_win"])
         player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
-
         result, message, won_money, lucky_number = casino_actions.make_bet(player, percent_to_win, wage)
         BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=lucky_number,
                                    amount=wage, win=result, money=won_money)
 
         return JsonResponse({"message": message})
-    else:
-        return JsonResponse({"status": "forbidden"})
+    return JsonResponse({"status": "forbidden"})
 
 
 @transaction.atomic

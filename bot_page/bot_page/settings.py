@@ -27,10 +27,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config_parser.get("secret_key", "secret_key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 if not DEBUG:
-    ALLOWED_HOSTS = [".dogson.ovh", "89.38.135.42"]
+    ALLOWED_HOSTS = [".dogson.ovh", "89.38.135.42", "127.0.0.1"]
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
