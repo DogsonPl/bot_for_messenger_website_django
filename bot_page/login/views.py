@@ -53,22 +53,12 @@ def register_(request):
             email.attach_alternative(html_message, "text/html")
             email.send()
             # todo automatyczne przekierowane do logowania po zaakceptowaniu linku
-            response = render(request, "login/waiting_for_confirmation.html", {"nav_bar": "account", "mail": user_mail})
-            response.set_cookie("username", request.POST["username"])
-            return response
+            return render(request, "login/waiting_for_confirmation.html", {"nav_bar": "account", "mail": user_mail})
         else:
             messages.error(request, "Hasła się nie zgadzają, albo wpisałeś złego maila")
     else:
-        username = request.COOKIES.get("username")
-        if username is not None:
-            try:
-                User.objects.get(username=username).delete()
-            except User.DoesNotExist:
-                pass
-        form = RegisterForm(initial={"username": username})
-    response = render(request, "login/register.html", {"nav_bar": "account", "form": form})
-    response.delete_cookie("username")
-    return response
+        form = RegisterForm()
+        return render(request, "login/register.html", {"nav_bar": "account", "form": form})
 
 
 def activate(request, uidb64, token):
