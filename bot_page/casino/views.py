@@ -103,12 +103,10 @@ def make_bet(request):
 @check_ip
 def make_bet_fb(request):
     if request.method == "POST":
-        try:
-            wage = abs(float(request.POST["bet_money"]))
-            percent_to_win = abs(int(request.POST["percent_to_win"]))
-            player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
-        except ValueError:
-            return "Podałeś dane złego typu 😁"
+        wage = abs(float(request.POST["bet_money"]))
+        percent_to_win = abs(int(request.POST["percent_to_win"]))
+        player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
+
         if player.money < wage or not 1 <= percent_to_win <= 90:
             message = "🚫 Nie masz wystarczająco pieniędzy"
         else:
