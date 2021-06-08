@@ -1,5 +1,6 @@
 from decimal import Decimal, getcontext
 import secrets
+from .models import Jackpot
 
 getcontext().prec = 20
 
@@ -41,3 +42,16 @@ Masz ich obecnie {'%.2f' % player.money}
 Wylosowana liczba: {lucky_number}"""
     player.save()
     return result, message, won_money, lucky_number
+
+
+def buy_ticket(player, tickets_to_buy):
+    if player.money > tickets_to_buy:
+        status = 0
+        player.money -= tickets_to_buy
+        jackpot, crated = Jackpot.objects.get_or_create(player=player)
+        jackpot.tickets += tickets_to_buy
+        jackpot.save()
+        player.save()
+    else:
+        status = 1
+    return status

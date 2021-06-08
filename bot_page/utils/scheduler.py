@@ -86,6 +86,8 @@ def draw_jackpot_winner():
         winner_index = bisect.bisect(weights, random)
         winner = users[winner_index]
         Models.JackpotsResults.objects.create(winner=winner, prize=total)
+        winner.money += total
+        winner.save()
         Models.Jackpot.objects.all().delete()
 
 

@@ -123,15 +123,23 @@ def jackpot_buy(request):
     if request.method == "POST" and request.user.is_authenticated:
         player = CasinoPlayers.objects.get(user=request.user)
         tickets_to_buy = abs(int(request.POST["tickets"]))
-        if player.money > tickets_to_buy:
-            status = 0
-            player.money -= tickets_to_buy
-            jackpot, crated = Jackpot.objects.get_or_create(player=player)
-            jackpot.tickets += tickets_to_buy
-            jackpot.save()
-            player.save()
-        else:
-            status = 1
+        status = casino_actions.buy_ticket(player, tickets_to_buy)
         return JsonResponse({"status": status, "tickets": tickets_to_buy, "player_money": player.money})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
+@csrf_exempt
+@check_ip
+def jackpot_buy_fb(request):
+    if request.method == "POST":
+        player = CasinoPlayers.objects.get(user_fb_id=request.POST["user_fb_id"])
+        tickets_to_buy = abs(int(request.POST["tickets"]))
+        status = casino_actions.buy_ticket(player, tickets_to_buy)
+        if status == 0:
+            message = f"✅ Kupiono {tickets_to_buy} biletów za {tickets_to_buy} dogecoinów. Użyj komendy !jacpkot żeny dostać więcej informacji"
+        else:
+            message = f"🚫 Nie masz wystarczająco dogecoinów (chciałeś kupić {tickets_to_buy} biletów, a masz {player.money} dogecoinów)"
+        return JsonResponse({"message": message})
     else:
         return JsonResponse({"status": "forbidden"})
