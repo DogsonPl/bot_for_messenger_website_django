@@ -7,6 +7,7 @@ from django.conf import settings
 from django.apps import apps
 from django.db import transaction
 from django.db.models import Sum
+from django.core.cache import cache
 
 
 def init():
@@ -89,8 +90,21 @@ def draw_jackpot_winner():
         winner.money += total
         winner.save()
         Models.Jackpot.objects.all().delete()
+        set_last_jackpot_info()
 
 
 def reset_daily():
     Models.CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
     Models.CasinoPlayers.objects.all().update(take_daily=False)
+
+
+def set_last_jackpot_info():
+    last_jackpot = Models.JackpotsResults.objects.all().order_by("-id")
+    last_jackpot = last_jackpot[0]
+    last_jackpot_winner = last_jackpot.winner
+    last_jackpot_win_prize = last_jackpot.prize
+    cache.set("last_jackpot_winner", last_jackpot_winner)
+    cache.set("last_jackpot_win_prize", last_jackpot_win_prize)
+
+
+set_last_jackpot_info()

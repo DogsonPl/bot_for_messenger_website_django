@@ -40,10 +40,8 @@ def index(request):
     biggest_bet_win = cache.get("max_bet_win")
     biggest_bet_winner = cache.get("data")["max_bet_win"]["winner"]
 
-    last_jackpot = JackpotsResults.objects.all().order_by("-id")
-    last_jackpot = last_jackpot[0]
-    last_jackpot_winner = last_jackpot.winner
-    last_jackpot_win_prize = last_jackpot.prize
+    last_jackpot_winner = cache.get("last_jackpot_winner")
+    last_jackpot_win_prize = cache.get("last_jackpot_win_prize")
     return render(request, "bot_info/index.html", {"nav_bar": "bot_info",
                                                    "player": user_player,
                                                    "players": players,
