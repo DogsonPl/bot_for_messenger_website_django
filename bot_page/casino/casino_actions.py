@@ -13,10 +13,10 @@ def set_daily(player):
         player.take_daily = True
         player.save()
         message = f"""✅ Otrzymano właśnie darmowe {'%.2f' % received} dogecoinów.
-Jest to twoje {player.daily_strike-1} daily z rzędu"""
+Jest to twoje {player.daily_strike} daily z rzędu"""
     else:
         message = f"""Odebrano już dzisiaj daily, nie próbuj oszukać systemu 😉. 
-Twój daily strike to {player.daily_strike-1}"""
+Twój daily strike to {player.daily_strike}"""
     return message
 
 
