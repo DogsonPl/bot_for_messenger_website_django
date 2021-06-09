@@ -1,10 +1,9 @@
 server {
 	listen 443 ssl;
-	
-        ssl_certificate /etc/ssl/cert.pem;
-        ssl_certificate_key /etc/ssl/key.pem;
-
 	server_name dogson.ovh;
+	
+    ssl_certificate /etc/ssl/cert.pem;
+    ssl_certificate_key /etc/ssl/key.pem;
 
 location /static/ {
 	root /root/bot_page/staticfiles;
