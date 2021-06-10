@@ -25,7 +25,7 @@ def make_bet(player, percent_to_win, wage):
     result 0 --> player lost
     result 1 --> player won
     """
-    lucky_number = secrets.randbelow(101)
+    lucky_number = secrets.randbelow(100)  # get random number from 0 to 99
     if lucky_number >= percent_to_win:
         result = 0
         won_money = Decimal(wage*-1)
