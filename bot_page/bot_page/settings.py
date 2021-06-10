@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 from configparser import RawConfigParser
+from dotenv import load_dotenv
 
 config_parser = RawConfigParser()
 config_parser.read("bot_page//config.cfg", "UTF-8")
@@ -27,8 +28,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config_parser.get("secret_key", "secret_key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+load_dotenv()
+DEBUG = bool(int(os.environ.get("DEBUG")))
 if not DEBUG:
     ALLOWED_HOSTS = [".dogson.ovh", "89.38.135.42", "127.0.0.1"]
     CACHES = {
