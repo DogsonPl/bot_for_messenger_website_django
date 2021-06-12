@@ -107,8 +107,10 @@ def make_bet_fb(request):
         percent_to_win = abs(int(request.POST["percent_to_win"]))
         player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
 
-        if player.money < wage or not 1 <= percent_to_win <= 90:
+        if player.money < wage:
             message = "🚫 Nie masz wystarczająco pieniędzy"
+        elif not 1 <= percent_to_win <= 90:
+            message = "🚫 Możesz mieć od 1% do 90% na wygraną"
         else:
             result, message, won_money, lucky_number = casino_actions.make_bet(player, percent_to_win, wage)
             BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=lucky_number,
