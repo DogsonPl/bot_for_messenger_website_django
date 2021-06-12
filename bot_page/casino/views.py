@@ -67,8 +67,12 @@ def set_daily(request):
 @check_ip
 def set_daily_fb(request):
     if request.method == "POST":
-        player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
-        message = casino_actions.set_daily(player)
+        try:
+            player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
+        except ObjectDoesNotExist:
+            message = "💡 Użyj polecenia !register żeby móc się bawić w kasyno. Wszystkie dogecoiny są sztuczne"
+        else:
+            message = casino_actions.set_daily(player)
         return JsonResponse({"message": message})
     else:
         return JsonResponse({"status": "forbidden"})
@@ -105,16 +109,19 @@ def make_bet_fb(request):
     if request.method == "POST":
         wage = abs(float(request.POST["bet_money"]))
         percent_to_win = abs(int(request.POST["percent_to_win"]))
-        player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
-
-        if player.money < wage:
-            message = "🚫 Nie masz wystarczająco pieniędzy"
-        elif not 1 <= percent_to_win <= 90:
-            message = "🚫 Możesz mieć od 1% do 90% na wygraną"
+        try:
+            player = CasinoPlayers.objects.get(user_fb_id=request.POST["fb_user_id"])
+        except ObjectDoesNotExist:
+            message = "💡 Użyj polecenia !register żeby móc się bawić w kasyno. Wszystkie dogecoiny są sztuczne"
         else:
-            result, message, won_money, lucky_number = casino_actions.make_bet(player, percent_to_win, wage)
-            BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=lucky_number,
-                                       amount=wage, win=result, money=won_money)
+            if player.money < wage:
+                message = "🚫 Nie masz wystarczająco pieniędzy"
+            elif not 1 <= percent_to_win <= 90:
+                message = "🚫 Możesz mieć od 1% do 90% na wygraną"
+            else:
+                result, message, won_money, lucky_number = casino_actions.make_bet(player, percent_to_win, wage)
+                BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=lucky_number,
+                                           amount=wage, win=result, money=won_money)
 
         return JsonResponse({"message": message})
     return JsonResponse({"status": "forbidden"})
@@ -135,13 +142,17 @@ def jackpot_buy(request):
 @check_ip
 def jackpot_buy_fb(request):
     if request.method == "POST":
-        player = CasinoPlayers.objects.get(user_fb_id=request.POST["user_fb_id"])
-        tickets_to_buy = abs(int(request.POST["tickets"]))
-        status = casino_actions.buy_ticket(player, tickets_to_buy)
-        if status == 0:
-            message = f"✅ Kupiono {tickets_to_buy} biletów za {tickets_to_buy} dogecoinów. Użyj komendy !jacpkot żeby dostać więcej informacji"
+        try:
+            player = CasinoPlayers.objects.get(user_fb_id=request.POST["user_fb_id"])
+        except ObjectDoesNotExist:
+            message = "💡 Użyj polecenia !register żeby móc się bawić w kasyno. Wszystkie dogecoiny są sztuczne"
         else:
-            message = f"🚫 Nie masz wystarczająco dogecoinów (chciałeś kupić {tickets_to_buy} biletów, a masz {'%.2f' % player.money} dogecoinów)"
+            tickets_to_buy = abs(int(request.POST["tickets"]))
+            status = casino_actions.buy_ticket(player, tickets_to_buy)
+            if status == 0:
+                message = f"✅ Kupiono {tickets_to_buy} biletów za {tickets_to_buy} dogecoinów. Użyj komendy !jacpkot żeby dostać więcej informacji"
+            else:
+                message = f"🚫 Nie masz wystarczająco dogecoinów (chciałeś kupić {tickets_to_buy} biletów, a masz {'%.2f' % player.money} dogecoinów)"
         return JsonResponse({"message": message})
     else:
         return JsonResponse({"status": "forbidden"})
