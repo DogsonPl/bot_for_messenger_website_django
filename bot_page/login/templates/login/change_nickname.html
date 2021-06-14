@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %} Zmiana nicku {% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            {% csrf_token %}
+            {{form | crispy}}
+            <button type="submit" class="btn btn-primary">Zmień nick. Zmiana nicku kosztuje 100 dogecoinów</button>
+        </form>
+    </div>
+</div>
+
+{% for message in messages %}
+<div class="alert alert-danger">
+    {{ message }}
+</div>
+{% endfor %}
+
+{% endblock %}

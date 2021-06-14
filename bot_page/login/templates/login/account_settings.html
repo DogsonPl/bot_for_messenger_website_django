@@ -6,7 +6,8 @@
 {% block content %}
 <div class="row">
     <div class="col">
-        <a href="{% url 'change_password' %}">Zmień hasło</a>
+        <p><a href="{% url 'change_password' %}">Zmień hasło</a></p>
+        <p><a href="{% url 'account:change_nickname' %}">Zmień nick</a></p>
     </div>
 </div>
 {% endblock %}

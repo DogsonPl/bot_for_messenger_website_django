@@ -10,7 +10,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.http import HttpResponse
 from django.apps import apps
 from django.db.models import ObjectDoesNotExist
-from .forms import LoginForm, RegisterForm
+from django.db.utils import IntegrityError
+from .forms import LoginForm, RegisterForm, ChangeNicknameForm
 
 # Create your views here.
 User = get_user_model()
@@ -92,5 +93,31 @@ def user_settings(request):
     if request.user.is_authenticated:
         player = CasinoPlayers.objects.get(user=request.user)
         return render(request, "login/account_settings.html", {"nav_bar": "account", "player": player})
+    else:
+        return redirect("account/login")
+
+
+def change_nickname(request):
+    if request.user.is_authenticated:
+        player = CasinoPlayers.objects.get(user=request.user)
+        if request.method == "POST":
+            form = ChangeNicknameForm(request.POST)
+            if form.is_valid():
+                if player.money < 100:
+                    messages.error(request, "Nie masz wystarczająco dogecoinów")
+                else:
+                    new_nickname = request.POST["new_nickname"]
+                    request.user.username = new_nickname
+                    try:
+                        request.user.save()
+                    except IntegrityError:
+                        messages.error(request, "Ten nick jest obecnie w użyciu")
+                    else:
+                        player.money -= 100
+                        player.save()
+                        messages.success(request, f"Zmieniono nick na {new_nickname}")
+        else:
+            form = ChangeNicknameForm()
+        return render(request, "login/change_nickname.html", {"nav_bar": "account", "form": form, "player": player})
     else:
         return redirect("account/login")
