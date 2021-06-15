@@ -81,7 +81,7 @@ def activate(request, uidb64, token):
 
 def logout_(request):
     logout(request)
-    return redirect("/", {"nav_bar": "home"})
+    return redirect("/")
 
 
 def user_settings(request):
