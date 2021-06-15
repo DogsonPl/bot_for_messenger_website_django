@@ -6,7 +6,6 @@
         <title> {% block title %} {% endblock %}</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
         <meta name="description" content="Jest to bot, który działa na messengerze. Posiada funkcje takie jak wysyłanie informacji o koronawirusie, kasyno i wiele więcej!">
         <meta name="keywords" content="bot, messenger, dogson, kasyno">
         <meta name="author" content="Dogson">
@@ -18,6 +17,7 @@
         {% block scripts %}
         {% endblock %}
         <!-- fonts and icons-->
+        <link rel="icon" href="{% static 'images/logo.png' %}" type="image/png">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta Stencil">
@@ -30,7 +30,7 @@
 
     <body>
         <div class="wrapper">
-            <div class="sidebar" style="display: none; !important">
+            <div class="sidebar" style="display: none !important;">
                 <div class="sidebar-wrapper"></div>
             </div>
             <div class="main-panel">
