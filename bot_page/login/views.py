@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
-from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.auth import logout, login, authenticate, get_user_model
 from django.contrib import messages
+from django.contrib.auth import logout, login, authenticate, get_user_model
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import EmailMultiAlternatives
@@ -12,6 +12,7 @@ from django.apps import apps
 from django.db.models import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from .forms import LoginForm, RegisterForm, ChangeNicknameForm
+from . import utils
 
 # Create your views here.
 User = get_user_model()
@@ -27,7 +28,7 @@ def login_(request):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("/", {"nav_bar": ""})
+                return redirect("/")
             else:
                 messages.error(request, "Hasło albo email jest niepoprawne")
     else:
@@ -65,20 +66,14 @@ def register_(request):
 def activate(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
-        user = User._default_manager.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = User.objects.get(pk=uid)
+    except ObjectDoesNotExist:
         user = None
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
         user.save()
         # after confirming email, create or connect to player account
-        try:
-            player = CasinoPlayers.objects.get(email=user.email)
-        except ObjectDoesNotExist:
-            CasinoPlayers.objects.create(user=user, email=user.email)
-        else:
-            player.user = user
-            player.save()
+        utils.create_casino_player_account(user)
         return HttpResponse("Konto zostało aktywowane")
     else:
         return HttpResponse("Niepoprawny link aktywacyjny")
