@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
+import pytz
 import random as rd
 import bisect
-import pytz
+from django.db import transaction
 from django.db.utils import ProgrammingError
+from django.db.models import Sum
 from django.conf import settings
 from django.apps import apps
-from django.db import transaction
-from django.db.models import Sum
 from django.core.cache import cache
 
 
@@ -23,12 +23,11 @@ def init():
     scheduler.add_job(save_money_sum_of_all_players, trigger=CronTrigger(hour="0,12,18"),
                       id="save_money_sum_of_all_players", max_instances=1, replace_existing=True)
     scheduler.add_job(save_daily_money_history, trigger=CronTrigger(hour=0, minute=10),
-                      id="save_daily_money_history",
-                      max_instances=1, replace_existing=True)
-    scheduler.add_job(draw_jackpot_winner, trigger=CronTrigger(hour=0), id="draw_jackpot", max_instances=1,
-                      replace_existing=True)
-    scheduler.add_job(reset_daily, trigger=CronTrigger(hour=0), id="reset_daily", max_instances=1,
-                      replace_existing=True)
+                      id="save_daily_money_history", max_instances=1, replace_existing=True)
+    scheduler.add_job(draw_jackpot_winner, trigger=CronTrigger(hour=0),
+                      id="draw_jackpot", max_instances=1, replace_existing=True)
+    scheduler.add_job(reset_daily, trigger=CronTrigger(hour=0),
+                      id="reset_daily", max_instances=1, replace_existing=True)
 
     try:
         scheduler.start()
