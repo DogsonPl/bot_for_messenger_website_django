@@ -80,7 +80,6 @@ class TestBet(TestDatabase):
         result, message, won_money, lucky_number = make_bet(player=self.first_player, percent_to_win=percent_to_win, wage=wage)
         self.assertFalse(result)
         self.assertEqual(old_player_money+won_money, self.first_player.money)
-        self.assertEqual(message, f"<strong>📉 Przegrano {wage} dogecoinów</strong>. Masz ich obecnie {'%.2f' % self.first_player.money}\nWylosowana liczba: {lucky_number}")
         self.assertEqual(won_money, wage*-1)
 
     def test_win_bet(self):
@@ -93,7 +92,6 @@ class TestBet(TestDatabase):
         result, message, won_money, lucky_number = make_bet(player=self.first_player, percent_to_win=percent_to_win, wage=wage)
         self.assertTrue(result)
         self.assertEqual(old_player_money+won_money, self.first_player.money)
-        self.assertEqual(message, f"<strong>📈 Wygrano {'%.2f' % float(won_money)} dogecoinów</strong>. Masz ich obecnie {'%.2f' % self.first_player.money}\nWylosowana liczba: {lucky_number}")
         self.assertEqual(won_money, Decimal(((wage / (percent_to_win / 100)) - wage) * 0.99))
 
     def test_random_bets(self):
@@ -104,10 +102,8 @@ class TestBet(TestDatabase):
             result, message, won_money, lucky_number = make_bet(player=self.first_player, percent_to_win=percent_to_win, wage=wage)
             self.assertEqual(old_player_money + won_money, self.first_player.money)
             if result == 0:
-                self.assertEqual(message, f"<strong>📉 Przegrano {wage} dogecoinów</strong>. Masz ich obecnie {'%.2f' % self.first_player.money}\nWylosowana liczba: {lucky_number}")
                 self.assertEqual(won_money, wage * -1)
             elif result == 1:
-                self.assertEqual(message, f"<strong>📈 Wygrano {'%.2f' % float(won_money)} dogecoinów</strong>. Masz ich obecnie {'%.2f' % self.first_player.money}\nWylosowana liczba: {lucky_number}")
                 self.assertEqual(won_money, Decimal(((wage / (percent_to_win / 100)) - wage) * 0.99))
             else:
                 raise AssertionError("Result should be equal 0 or 1")
@@ -117,8 +113,7 @@ class TestDaily(TestDatabase):
     def test_valid_data(self):
         old_player_money = self.first_player.money
         old_daily_strike = self.first_player.daily_strike
-        message = set_daily(self.first_player)
-        self.assertEqual(message, f"Otrzymano daily 🥰 A dokładniej {10 + (old_daily_strike / 10)} dogecoinów 😎🤑")
+        set_daily(self.first_player)
         self.assertEqual(old_player_money + 10 + Decimal((old_daily_strike / 10)), self.first_player.money)
         self.assertEqual(old_daily_strike+1, self.first_player.daily_strike)
 
@@ -126,8 +121,7 @@ class TestDaily(TestDatabase):
         old_player_money = self.first_player.money
         old_daily_strike = self.first_player.daily_strike
         self.first_player.take_daily = True
-        message = set_daily(self.first_player)
-        self.assertEqual(message, "Odebrano już dzisiaj daily, nie próbuj oszukać systemu 😉")
+        set_daily(self.first_player)
         self.assertEqual(self.first_player.money, old_player_money)
         self.assertEqual(old_daily_strike, self.first_player.daily_strike)
 

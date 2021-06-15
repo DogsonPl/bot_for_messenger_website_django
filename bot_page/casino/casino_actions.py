@@ -1,5 +1,7 @@
 from decimal import Decimal, getcontext
-import secrets
+import os
+import struct
+from django.db import transaction
 from .models import Jackpot
 
 getcontext().prec = 20
@@ -25,7 +27,7 @@ def make_bet(player, percent_to_win, wage):
     result 0 --> player lost
     result 1 --> player won
     """
-    lucky_number = secrets.randbelow(100)  # get random number from 0 to 99
+    lucky_number = get_random_number()
     if lucky_number >= percent_to_win:
         result = 0
         won_money = Decimal(wage*-1)
@@ -44,7 +46,11 @@ Wylosowana liczba: {lucky_number}"""
     return result, message, won_money, lucky_number
 
 
+@transaction.atomic
 def buy_ticket(player, tickets_to_buy):
+    """
+    the ticket costs 1 dogecoin
+    """
     if player.money > tickets_to_buy:
         status = 0
         player.money -= tickets_to_buy
@@ -55,3 +61,10 @@ def buy_ticket(player, tickets_to_buy):
     else:
         status = 1
     return status
+
+
+def get_random_number() -> int:
+    """:return random number from 0 to 99"""
+    random_bytes = os.urandom(2)
+    random = struct.unpack("H", random_bytes)[0] % 100   # "H" --> unsigned short
+    return random
