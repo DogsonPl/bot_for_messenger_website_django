@@ -29,7 +29,7 @@ def post_worker_init(worker):
         print("Scheduler already started")
 
 
-def worker_abort(worker):
+def worker_exit(server, worker):
     if worker.pid == shared_memory[2]:
         shared_memory[1] = 0
 
