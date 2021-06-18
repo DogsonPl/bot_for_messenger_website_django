@@ -2,19 +2,27 @@ from decimal import Decimal, getcontext
 import os
 import struct
 from django.db import transaction
-from .models import Jackpot
+from .models import Jackpot, CasinoPlayers
 
 getcontext().prec = 20
 
 
 def set_daily(player):
     if not player.take_daily:
-        received = 10 + (player.daily_strike / 10)
+        players_who_take_daily = CasinoPlayers.objects.filter(take_daily=True)
+        if len(players_who_take_daily) == 0:
+            received_bonus = 100
+            extra_message = "❤ JESTEŚ PIERWSZĄ OSOBĄ KTÓRA ODEBRAŁA DAILY! OTRZYMUJESZ BONUSOWE 100 DOGÓW\n"
+        else:
+            received_bonus = 0
+            extra_message = ""
+
+        received = 10 + (player.daily_strike / 10) + received_bonus
         player.money += Decimal(received)
         player.daily_strike += 1
         player.take_daily = True
         player.save()
-        message = f"""✅ Otrzymano właśnie darmowe {'%.2f' % received} dogecoinów.
+        message = extra_message + f"""✅ Otrzymano właśnie darmowe {'%.2f' % received} dogecoinów.
 Jest to twoje {player.daily_strike} daily z rzędu"""
     else:
         message = f"""Odebrano już dzisiaj daily, nie próbuj oszukać systemu 😉. 
