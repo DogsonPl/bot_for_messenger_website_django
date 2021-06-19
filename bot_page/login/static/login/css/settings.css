@@ -1,0 +1,7 @@
+#referral_code{
+    color: red;
+}
+
+#referral_code:hover{
+    cursor: pointer;
+}

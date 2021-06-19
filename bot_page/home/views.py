@@ -21,7 +21,7 @@ def contact(request):
         form = forms.ContactForm(request.POST)
         message = request.POST.get("message")
         if form.is_valid():
-            send_mail(subject=f"Wiadomość od {request.user}", message=message, from_email=request.POST["email"],
+            send_mail(subject=f"Wiadomość od {request.POST['email']}", message=message, from_email=request.POST["email"],
                       recipient_list=["dogsonkrul@gmail.com"])
             return render(request, "home/thanks_for_contact.html", {})
         else:

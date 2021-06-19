@@ -3,11 +3,26 @@
 
 {% block title %} Ustawienia {% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{% static 'login/css/settings.css' %}">
+{%  endblock %}
+
 {% block content %}
 <div class="row">
-    <div class="col">
+    <div class="col-12 text-center">
+        <p>Twój kod referencyjny: <span id="referral_code" onclick="copy_referral_code()" data-clipboard-text="1">{{ user.referral_code }}</span>.
+            Podaj ten kod swojemu znajomemu, a gdy znajomy wpisze ten kod dostaniecie po 50 dogów. Obecnie z twojego kodu skorzystało {{ user.referrals }} osób</p>
+    </div>
+    <div class="col-12">
         <p><a href="{% url 'change_password' %}">Zmień hasło</a></p>
         <p><a href="{% url 'account:change_nickname' %}">Zmień nick</a></p>
     </div>
 </div>
+
+
+<!-- todo better ref code copy frontend -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.10/clipboard.min.js"></script>
+<script src="{% static 'login/js/settings.js' %}"></script>
+
 {% endblock %}
