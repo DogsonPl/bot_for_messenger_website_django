@@ -99,9 +99,14 @@ def reset_daily():
 
 def set_last_jackpot_info():
     last_jackpot = Models.JackpotsResults.objects.all().order_by("-id")
-    last_jackpot = last_jackpot[0]
-    last_jackpot_winner = last_jackpot.winner
-    last_jackpot_win_prize = last_jackpot.prize
+    try:
+        last_jackpot = last_jackpot[0]
+    except IndexError:
+        last_jackpot_winner = None
+        last_jackpot_win_prize = 0
+    else:
+        last_jackpot_winner = last_jackpot.winner
+        last_jackpot_win_prize = last_jackpot.prize
     cache.set("last_jackpot_winner", last_jackpot_winner)
     cache.set("last_jackpot_win_prize", last_jackpot_win_prize)
 
