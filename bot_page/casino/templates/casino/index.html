@@ -21,7 +21,6 @@
                     </header>
                 </div>
                 <div class="card-body pt-0">
-                    <p>Twój kod referencyjny: {{ user.referral_code }}. Podaj ten kod swojemu znajomemu, a gdy znajomy wpisze ten kod dostaniecie po 50 dogów. Obecnie z twojego kodu skorzystało {{ user.referrals }} osób</p>
                     <p>Posiadasz <span id="user_money">{{player.money | floatformat:2}}</span> monet</p>
                     <p>Twój daily strike wynosi <span id="daily_strike">{{player.daily_strike}}</span></p>
                     {% if player.take_daily == 0 %}
