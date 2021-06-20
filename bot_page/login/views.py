@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
 from django.contrib import messages
-from django.contrib.auth import logout, login, authenticate
+from django.contrib.auth import logout, login, authenticate, get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
@@ -13,9 +13,9 @@ from django.db.models import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from .forms import LoginForm, RegisterForm, ChangeNicknameForm
 from . import utils
-from .models import User
 
 # Create your views here.
+User = get_user_model()
 CasinoPlayers = apps.get_model("casino", "CasinoPlayers")
 
 
@@ -39,7 +39,7 @@ def login_(request):
 def register_(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
-        if form.is_valid(request):
+        if form.is_valid():
             user = form.save(commit=False)
             user.is_active = False
             user_mail = request.POST["email"]
@@ -57,9 +57,10 @@ def register_(request):
             # todo automatyczne przekierowane do logowania po zaakceptowaniu linku
             return render(request, "login/waiting_for_confirmation.html", {"nav_bar": "account", "mail": user_mail})
         else:
-            messages.error(request, "Hasła się nie zgadzają, albo został przez ciebie wpisany zły kod referencyjny")
-    form = RegisterForm()
-    return render(request, "login/register.html", {"nav_bar": "account", "form": form})
+            messages.error(request, "Hasła się nie zgadzają, albo wpisałeś złego maila")
+    else:
+        form = RegisterForm()
+        return render(request, "login/register.html", {"nav_bar": "account", "form": form})
 
 
 def activate(request, uidb64, token):
@@ -70,7 +71,6 @@ def activate(request, uidb64, token):
         user = None
     if user is not None and default_token_generator.check_token(user, token):
         user.is_active = True
-        user.referral_code = int(user.id + 1e11)
         user.save()
         # after confirming email, create or connect to player account
         utils.create_casino_player_account(user)

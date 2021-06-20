@@ -24,9 +24,6 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-    referrer = models.CharField(max_length=12, blank=True, null=True)
-    referral_code = models.CharField(max_length=12, unique=True, blank=True, null=True, default=None)
-    referrals = models.PositiveIntegerField(default=0)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = CustomUserManager()

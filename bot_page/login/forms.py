@@ -1,8 +1,9 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
-from django.db.models import ObjectDoesNotExist
 from hcaptcha.fields import hCaptchaField
-from .models import User
+
+User = get_user_model()
 
 
 class LoginForm(forms.Form):
@@ -20,29 +21,11 @@ class RegisterForm(UserCreationForm):
     password1 = forms.CharField(label="Hasło", widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
     password2 = forms.CharField(label="Potwierdź hasło",
                                 widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
-    referrer = forms.CharField(label="Wpisz tu kod referencyjny, żeby otrzymać darmowe 50 dogecoinów!",
-                               max_length=12, min_length=12, required=False,
-                               widget=forms.TextInput(attrs={"class": "form-control mb-2"}))
     captcha = hCaptchaField()
 
     class Meta:
         model = User
-        fields = ["email", "password1", "password2", "username", "referrer", "captcha"]
-
-    def is_valid(self, request):
-        is_valid = super().is_valid()
-        if is_valid:
-            referral_code = request.POST.get("referrer")
-            if not referral_code:
-                return True
-
-            try:
-                User.objects.get(referral_code=referral_code)
-            except ObjectDoesNotExist:
-                return False
-            else:
-                return True
-        return False
+        fields = ["email", "password1", "password2", "username", "captcha"]
 
 
 class ChangePasswordForm(PasswordChangeForm):
