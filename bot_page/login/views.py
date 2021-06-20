@@ -58,9 +58,8 @@ def register_(request):
             return render(request, "login/waiting_for_confirmation.html", {"nav_bar": "account", "mail": user_mail})
         else:
             messages.error(request, "Hasła się nie zgadzają, albo wpisałeś złego maila")
-    else:
-        form = RegisterForm()
-        return render(request, "login/register.html", {"nav_bar": "account", "form": form})
+    form = RegisterForm()
+    return render(request, "login/register.html", {"nav_bar": "account", "form": form})
 
 
 def activate(request, uidb64, token):
