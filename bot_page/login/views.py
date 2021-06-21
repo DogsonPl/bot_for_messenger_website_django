@@ -1,12 +1,8 @@
 from django.shortcuts import render, redirect
-from django.template.loader import get_template
 from django.contrib import messages
 from django.contrib.auth import logout, login, authenticate, get_user_model
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.core.mail import EmailMultiAlternatives
+from django.utils.http import urlsafe_base64_decode
 from django.http import HttpResponse
 from django.apps import apps
 from django.db.models import ObjectDoesNotExist
@@ -39,25 +35,21 @@ def login_(request):
 def register_(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            user_mail = request.POST["email"]
-            user.save()
-            site = get_current_site(request)
-            html_template = get_template("login/activate_email.html")
-            context = {"domain": site.domain,
-                       "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                       "token": default_token_generator.make_token(user),
-                       "username": request.POST["username"]}
-            html_message = html_template.render(context)
-            email = EmailMultiAlternatives("Mail potwierdzający stworzenie konta", to=[user_mail])
-            email.attach_alternative(html_message, "text/html")
-            email.send()
-            # todo automatyczne przekierowane do logowania po zaakceptowaniu linku
-            return render(request, "login/waiting_for_confirmation.html", {"nav_bar": "account", "mail": user_mail})
+        user_mail = request.POST["email"]
+        try:
+            user = User.objects.get(email=user_mail)
+        except ObjectDoesNotExist:
+            if form.is_valid():
+                utils.send_account_activation_email(request, form, user_mail)
+                return render(request, "login/waiting_for_confirmation.html", {"nav_bar": "account", "mail": user_mail})
+            else:
+                messages.error(request, "Hasła się nie zgadzają, albo wpisałeś złego maila")
         else:
-            messages.error(request, "Hasła się nie zgadzają, albo wpisałeś złego maila")
+            if user.is_active:
+                messages.error(request, "Konto z takim mailem istnieje")
+            else:
+                utils.send_account_activation_email(request, form, user_mail)
+                return render(request, "login/waiting_for_confirmation.html", {"nav_bar": "account", "mail": user_mail})
     form = RegisterForm()
     return render(request, "login/register.html", {"nav_bar": "account", "form": form})
 
@@ -73,7 +65,8 @@ def activate(request, uidb64, token):
         user.save()
         # after confirming email, create or connect to player account
         utils.create_casino_player_account(user)
-        return HttpResponse("Konto zostało aktywowane")
+        login(request, user)
+        return redirect("/")
     else:
         return HttpResponse("Niepoprawny link aktywacyjny")
 
