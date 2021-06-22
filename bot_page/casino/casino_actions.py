@@ -58,6 +58,8 @@ Wylosowana liczba: {lucky_number}"""
 def buy_ticket(player, tickets_to_buy):
     """
     the ticket costs 1 dogecoin
+    status 0 --> player bought tickets
+    status 1 --> player doesn't have enough money to buy tickets
     """
     if player.money > tickets_to_buy:
         status = 0

@@ -5,7 +5,6 @@ from django.core.cache import cache
 from .utils import serialize
 # Create your views here.
 
-# todo do gulpfile working
 CasinoPlayers = apps.get_model("casino", "CasinoPlayers")
 MoneyHistory = apps.get_model("casino", "MoneyHistory")
 TwentyFourHoursMoneyHistory = apps.get_model("casino", "TwentyFourHoursMoneyHistory")

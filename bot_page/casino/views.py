@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import CasinoPlayers, BetsHistory, Jackpot
 from .forms import BetForm, JackpotForm
-from .utils import check_ip
+from .utils import check_post_password
 from . import casino_actions
 
 
@@ -64,7 +64,7 @@ def set_daily(request):
 
 
 @csrf_exempt
-@check_ip
+@check_post_password
 def set_daily_fb(request):
     if request.method == "POST":
         try:
@@ -104,7 +104,7 @@ def make_bet(request):
 
 
 @csrf_exempt
-@check_ip
+@check_post_password
 def make_bet_fb(request):
     if request.method == "POST":
         wage = abs(float(request.POST["bet_money"]))
@@ -139,7 +139,7 @@ def jackpot_buy(request):
 
 
 @csrf_exempt
-@check_ip
+@check_post_password
 def jackpot_buy_fb(request):
     if request.method == "POST":
         try:

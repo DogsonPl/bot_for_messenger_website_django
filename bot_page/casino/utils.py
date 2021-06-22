@@ -5,7 +5,7 @@ from django.contrib.auth import settings
 SECRET_KEY = settings.SECRET_KEY
 
 
-def check_ip(function):
+def check_post_password(function):
     def wrapper(request):
         password = request.POST.get("django_password")
         if compare_digest(password, SECRET_KEY):
