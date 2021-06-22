@@ -2,6 +2,8 @@ from decimal import Decimal, getcontext
 import os
 import struct
 from django.db import transaction
+from django.core.cache import cache
+from utils import statistic_data
 from .models import Jackpot, CasinoPlayers
 
 getcontext().prec = 20
@@ -37,6 +39,7 @@ def make_bet(player, percent_to_win, wage):
     """
     lucky_number = get_random_number()
     if lucky_number >= percent_to_win:
+        player.lost_bets += 1
         result = 0
         won_money = Decimal(wage*-1)
         player.money += won_money
@@ -44,14 +47,30 @@ def make_bet(player, percent_to_win, wage):
 Masz ich obecnie {'%.2f' % player.money} 
 Wylosowana liczba: {lucky_number}"""
     else:
+        player.won_bets += 1
         result = 1
         won_money = Decimal(((wage / (percent_to_win / 100)) - wage) * 0.99)
         player.money += won_money
         message = f"""<strong>📈 Wygrano {'%.2f' % float(won_money)} dogecoinów</strong>.  
 Masz ich obecnie {'%.2f' % player.money} 
 Wylosowana liczba: {lucky_number}"""
+
+        if cache.get("max_bet_win") < won_money:
+            update_the_biggest_win(player, won_money, percent_to_win, wage)
+
     player.save()
     return result, message, won_money, lucky_number
+
+
+def update_the_biggest_win(player, won_money, percent_to_win, wage):
+    cache.set("max_bet_win", won_money, None)
+    data = cache.get("data")
+    data["max_bet_win"]["prize"] = float(won_money)
+    data["max_bet_win"]["winner"] = str(player)
+    data["max_bet_win"]["percent_to_win"] = percent_to_win
+    data["max_bet_win"]["wage"] = int(wage)
+    cache.set("data", data, None)
+    statistic_data.save()
 
 
 @transaction.atomic

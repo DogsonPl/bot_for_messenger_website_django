@@ -20,14 +20,3 @@ def on_bet(sender, instance, created, **kwargs):
     user_bets = BetsHistory.objects.filter(player=instance.player)
     if len(user_bets) > 10:
         user_bets[0].delete()
-
-    if instance.win == 1:
-        if cache.get("max_bet_win") < instance.money:
-            cache.set("max_bet_win", instance.money, None)
-            data = cache.get("data")
-            data["max_bet_win"]["prize"] = float(instance.money)
-            data["max_bet_win"]["winner"] = str(instance.player)
-            data["max_bet_win"]["percent_to_win"] = instance.user_number
-            data["max_bet_win"]["wage"] = int(instance.amount)
-            cache.set("data", data, None)
-            statistic_data.save()

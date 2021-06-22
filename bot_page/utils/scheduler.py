@@ -3,7 +3,7 @@ import pytz
 import random as rd
 import bisect
 from django.db import transaction
-from django.db.utils import ProgrammingError
+from django.db.utils import ProgrammingError, OperationalError
 from django.db.models import Sum
 from django.conf import settings
 from django.apps import apps
@@ -98,17 +98,20 @@ def reset_daily():
 
 
 def set_last_jackpot_info():
-    last_jackpot = Models.JackpotsResults.objects.all().order_by("-id")
     try:
-        last_jackpot = last_jackpot[0]
-    except IndexError:
-        last_jackpot_winner = None
-        last_jackpot_win_prize = 0
-    else:
-        last_jackpot_winner = last_jackpot.winner
-        last_jackpot_win_prize = last_jackpot.prize
-    cache.set("last_jackpot_winner", last_jackpot_winner)
-    cache.set("last_jackpot_win_prize", last_jackpot_win_prize)
+        last_jackpot = Models.JackpotsResults.objects.all().order_by("-id")
+        try:
+            last_jackpot = last_jackpot[0]
+        except IndexError:
+            last_jackpot_winner = None
+            last_jackpot_win_prize = 0
+        else:
+            last_jackpot_winner = last_jackpot.winner
+            last_jackpot_win_prize = last_jackpot.prize
+        cache.set("last_jackpot_winner", last_jackpot_winner)
+        cache.set("last_jackpot_win_prize", last_jackpot_win_prize)
+    except OperationalError:
+        print("Database is probably during migrations")
 
 
 set_last_jackpot_info()

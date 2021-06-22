@@ -17,6 +17,7 @@
 -->
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %} Informacje {% endblock %}
 
@@ -166,10 +167,10 @@
                                 Dogecoiny
                             </th>
                             <th scope="col">
-                                soon
+                                Wygrane bety
                             </th>
                             <th class="text-center" scope="col">
-                                soon
+                                Przegrane bety
                             </th>
                         </tr>
                         </thead>
@@ -183,10 +184,10 @@
                                 {{ player.money | floatformat:2}}
                             </td>
                             <td>
-                                soon
+                                {{ player.won_bets |  intcomma }}
                             </td>
                             <td class="text-center">
-                                soon
+                                {{ player.lost_bets |  intcomma }}
                             </td>
                         </tr>
                         {% endfor %}
