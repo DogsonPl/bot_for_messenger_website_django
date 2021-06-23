@@ -94,7 +94,7 @@ def draw_jackpot_winner():
 
 def reset_daily():
     Models.CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
-    Models.CasinoPlayers.objects.all().update(take_daily=False)
+    Models.CasinoPlayers.objects.all().update(take_daily=False, today_lost_money=0, today_won_money=0)
 
 
 def set_last_jackpot_info():

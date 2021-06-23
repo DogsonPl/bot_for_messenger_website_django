@@ -15,6 +15,8 @@ class CasinoPlayers(models.Model):
     daily_strike = models.PositiveSmallIntegerField(default=0)
     won_bets = models.PositiveBigIntegerField(default=0)
     lost_bets = models.PositiveBigIntegerField(default=0)
+    today_won_money = models.FloatField(default=0)
+    today_lost_money = models.FloatField(default=0)
 
     class Meta:
         verbose_name = "Player"

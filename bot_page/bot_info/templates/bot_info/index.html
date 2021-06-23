@@ -18,6 +18,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
+{% load math %}
 
 {% block title %} Informacje {% endblock %}
 
@@ -41,6 +42,18 @@
                     </a>
                 </h4>
                 <h4><a href="{% url 'home:privacy_policy' %}">Polityka prywatności</a> </h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <p>Wygrałeś/aś dzisiaj: {{ player.today_won_money | floatformat:2}} dogecoinów</p>
+                <p>Przegrałeś/aś dzisiaj: {{ player.today_lost_money | floatformat:2 }} dogecoinów</p>
+                <p>Dzisiejszy profit:  {{ player.today_won_money | add:player.today_lost_money }} dogecoinów</p>
             </div>
         </div>
     </div>
