@@ -12,6 +12,11 @@ UsersTotalMoneyHistory = apps.get_model("casino", "UsersTotalMoneyHistory")
 JackpotsResults = apps.get_model("casino", "JackpotsResults")
 
 
+class NonLoggedUser:
+    today_won_money = 0
+    today_lost_money = 0
+
+
 def index(request):
     if request.user.is_authenticated:
         user_player = CasinoPlayers.objects.get(user=request.user)
@@ -20,7 +25,7 @@ def index(request):
         user_money_daily_statistic_data = TwentyFourHoursMoneyHistory.objects.filter(player=user_player)
         user_money_daily_statistic_data = serialize(user_money_daily_statistic_data)
     else:
-        user_player = None
+        user_player = NonLoggedUser
         user_money_statistic_data = []
         user_money_daily_statistic_data = []
 
