@@ -1,1 +1,1 @@
-**Remember to don't run your code on root 😉** 
+**Remember to don't run your page on root on production 😉** 

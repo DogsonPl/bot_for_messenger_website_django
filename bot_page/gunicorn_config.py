@@ -1,3 +1,7 @@
+"""
+This is gunicorn configuration file
+Run command: gunicorn -c gunicorn_config.py bot_page.wsgi
+"""
 from multiprocessing import shared_memory, cpu_count
 
 command = "/root/django_env/bin/gunicorn"
@@ -17,8 +21,8 @@ shared_memory = shared_memory.ShareableList([0, 0, 1e10])
 
 def post_worker_init(worker):
     if not shared_memory[0]:
-        from utils import statistic_data
         shared_memory[0] = 1
+        from utils import statistic_data
         statistic_data.init()
     if not shared_memory[1]:
         shared_memory[1] = 1
