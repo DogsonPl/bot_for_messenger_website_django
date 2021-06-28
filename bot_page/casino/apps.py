@@ -7,9 +7,9 @@ class CasinoConfig(AppConfig):
     name = 'casino'
 
     def ready(self):
-        # todo signals id
         from . import signals
         if settings.DEBUG:
+            # on production gunicorn is responsible for running scheduler and collecting statistic data to cache
             from utils import scheduler, statistic_data
             scheduler.init()
             statistic_data.init()
