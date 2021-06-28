@@ -1,5 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as django_views
+
 from .forms import ChangePasswordForm, ResetPasswordForm, ResetPasswordEmailForm
 
 

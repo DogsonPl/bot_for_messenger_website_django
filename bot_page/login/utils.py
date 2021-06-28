@@ -1,11 +1,14 @@
 from django.apps import apps
 from django.db.models import ObjectDoesNotExist
+from django.db.utils import IntegrityError
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
+from django.contrib import messages
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.contrib.auth.tokens import default_token_generator
+
 from .models import User
 
 CasinoPlayers = apps.get_model("casino", "CasinoPlayers")
@@ -39,3 +42,16 @@ def send_account_activation_email(request, form, user_mail):
     email = EmailMultiAlternatives("Mail potwierdzający stworzenie konta", to=[user_mail])
     email.attach_alternative(html_message, "text/html")
     email.send()
+
+
+def change_player_nickname(request, player):
+    new_nickname = request.POST["new_nickname"]
+    request.user.username = new_nickname
+    try:
+        request.user.save()
+    except IntegrityError:
+        messages.error(request, "Ten nick jest obecnie w użyciu")
+    else:
+        player.money -= 100
+        player.save()
+        messages.success(request, f"Zmieniono nick na {new_nickname}")

@@ -6,11 +6,11 @@ from django.utils.http import urlsafe_base64_decode
 from django.http import HttpResponse
 from django.apps import apps
 from django.db.models import ObjectDoesNotExist
-from django.db.utils import IntegrityError
+
 from .forms import LoginForm, RegisterForm, ChangeNicknameForm
 from . import utils
-
 # Create your views here.
+
 User = get_user_model()
 CasinoPlayers = apps.get_model("casino", "CasinoPlayers")
 
@@ -93,16 +93,7 @@ def change_nickname(request):
                 if player.money < 100:
                     messages.error(request, "Nie masz wystarczająco dogecoinów")
                 else:
-                    new_nickname = request.POST["new_nickname"]
-                    request.user.username = new_nickname
-                    try:
-                        request.user.save()
-                    except IntegrityError:
-                        messages.error(request, "Ten nick jest obecnie w użyciu")
-                    else:
-                        player.money -= 100
-                        player.save()
-                        messages.success(request, f"Zmieniono nick na {new_nickname}")
+                    utils.change_player_nickname(request, player)
         else:
             form = ChangeNicknameForm()
         return render(request, "login/change_nickname.html", {"nav_bar": "account", "form": form, "player": player})
