@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+
 from configparser import RawConfigParser
 from dotenv import load_dotenv
 
@@ -185,7 +186,8 @@ EMAIL_HOST_PASSWORD = config_parser.get("email", "email_host_password")
 EMAIL_PORT = config_parser.get("email", "email_port")
 EMAIL_USE_TLS = True
 
-ADMINS = [("Me", "dogsonkrul@gmail.com")]
+ADMIN_EMAIL = config_parser.get("admin_email", "email")
+ADMINS = [("Me", ADMIN_EMAIL)]
 SERVER_EMAIL = EMAIL_HOST_USER
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
