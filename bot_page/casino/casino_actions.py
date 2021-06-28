@@ -1,18 +1,20 @@
 from decimal import Decimal, getcontext
 import os
 import struct
+
 from django.db import transaction
 from django.core.cache import cache
+
 from utils import statistic_data
 from .models import Jackpot, CasinoPlayers
 
 getcontext().prec = 20
 
 
-def set_daily(player):
+def set_daily(player) -> str:
     if not player.take_daily:
-        players_who_take_daily = CasinoPlayers.objects.filter(take_daily=True)
-        if len(players_who_take_daily) == 0:
+        players_who_took_daily = CasinoPlayers.objects.filter(take_daily=True)
+        if len(players_who_took_daily) == 0:
             received_bonus = 100
             extra_message = "❤ JESTEŚ PIERWSZĄ OSOBĄ KTÓRA ODEBRAŁA DAILY! OTRZYMUJESZ BONUSOWE 100 DOGÓW\n"
         else:
@@ -32,7 +34,7 @@ Twój daily strike to {player.daily_strike}"""
     return message
 
 
-def make_bet(player, percent_to_win, wage):
+def make_bet(player, percent_to_win: int, wage: float):
     """
     result 0 --> player lost
     result 1 --> player won
@@ -53,7 +55,7 @@ Wylosowana liczba: {lucky_number}"""
         won_money = Decimal(((wage / (percent_to_win / 100)) - wage) * 0.99)
         player.money += won_money
         player.today_won_money += float(won_money)
-        message = f"""<strong>📈 Wygrano {'%.2f' % float(won_money)} dogecoinów</strong>.  
+        message = f"""<strong>📈 Wygrano {'%.2f' % won_money} dogecoinów</strong>.  
 Masz ich obecnie {'%.2f' % player.money} 
 Wylosowana liczba: {lucky_number}"""
 
@@ -76,7 +78,7 @@ def update_the_biggest_win(player, won_money, percent_to_win, wage):
 
 
 @transaction.atomic
-def buy_ticket(player, tickets_to_buy):
+def buy_ticket(player, tickets_to_buy: int) -> int:
     """
     the ticket costs 1 dogecoin
     status 0 --> player bought tickets
