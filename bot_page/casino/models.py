@@ -27,7 +27,7 @@ class CasinoPlayers(models.Model):
         if self.user:
             return str(self.user)
         else:
-            return str(self.fb_name)
+            return self.fb_name
 
 
 class Jackpot(models.Model):
