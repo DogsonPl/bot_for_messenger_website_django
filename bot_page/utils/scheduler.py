@@ -2,17 +2,26 @@ from datetime import datetime, timedelta
 import pytz
 import random as rd
 import bisect
+
 from django.db import transaction
 from django.db.utils import ProgrammingError, OperationalError
 from django.db.models import Sum
 from django.conf import settings
 from django.apps import apps
 from django.core.cache import cache
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+
+
+CasinoPlayers = apps.get_model("casino", "CasinoPlayers")
+MoneyHistory = apps.get_model("casino", "MoneyHistory")
+TwentyFourHoursMoneyHistory = apps.get_model("casino", "TwentyFourHoursMoneyHistory")
+UsersTotalMoneyHistory = apps.get_model("casino", "UsersTotalMoneyHistory")
+Jackpot = apps.get_model("casino", "Jackpot")
+JackpotsResults = apps.get_model("casino", "JackpotsResults")
 
 
 def init():
-    from apscheduler.schedulers.background import BackgroundScheduler
-    from apscheduler.triggers.cron import CronTrigger
     from django_apscheduler.jobstores import DjangoJobStore
 
     scheduler = BackgroundScheduler(timezone=settings.TIME_ZONE)
@@ -37,46 +46,37 @@ def init():
         print("Scheduler started")
 
 
-class Models:
-    CasinoPlayers = apps.get_model("casino", "CasinoPlayers")
-    MoneyHistory = apps.get_model("casino", "MoneyHistory")
-    TwentyFourHoursMoneyHistory = apps.get_model("casino", "TwentyFourHoursMoneyHistory")
-    UsersTotalMoneyHistory = apps.get_model("casino", "UsersTotalMoneyHistory")
-    Jackpot = apps.get_model("casino", "Jackpot")
-    JackpotsResults = apps.get_model("casino", "JackpotsResults")
-
-
 @transaction.atomic
 def save_hourly_money_history():
     expired_date = datetime.now(tz=pytz.timezone(settings.TIME_ZONE)) - timedelta(days=1)
-    Models.TwentyFourHoursMoneyHistory.objects.filter(date__lt=expired_date).delete()
-    users_data = Models.CasinoPlayers.objects.all()
-    Models.TwentyFourHoursMoneyHistory.objects.bulk_create(
-        [Models.TwentyFourHoursMoneyHistory(player=i, money=i.money) for i in users_data])
+    TwentyFourHoursMoneyHistory.objects.filter(date__lt=expired_date).delete()
+    users_data = CasinoPlayers.objects.all()
+    TwentyFourHoursMoneyHistory.objects.bulk_create([TwentyFourHoursMoneyHistory(player=i, money=i.money) for i in users_data])
 
 
 def save_daily_money_history():
-    users_data = Models.CasinoPlayers.objects.all()
-    Models.MoneyHistory.objects.bulk_create([Models.MoneyHistory(player=i, money=i.money) for i in users_data])
+    users_data = CasinoPlayers.objects.all()
+    MoneyHistory.objects.bulk_create([MoneyHistory(player=i, money=i.money) for i in users_data])
 
 
 def save_money_sum_of_all_players():
-    total_money = Models.CasinoPlayers.objects.all().aggregate(total_money=Sum("money"))["total_money"]
-    Models.UsersTotalMoneyHistory.objects.create(total_money=total_money)
+    total_money = CasinoPlayers.objects.all().aggregate(total_money=Sum("money"))["total_money"]
+    UsersTotalMoneyHistory.objects.create(total_money=total_money)
 
 
 @transaction.atomic
 def draw_jackpot_winner():
-    players = Models.Jackpot.objects.all()
-    tickets = []
-    users = []
-    for i in players:
-        tickets.append(i.tickets)
-        users.append(i.player)
-    if not tickets:
+    players = Jackpot.objects.all()
+    if len(players) == 0:
         # no one bought tickets to play in jackpot
         pass
     else:
+        tickets = []
+        users = []
+        for i in players:
+            tickets.append(i.tickets)
+            users.append(i.player)
+
         total = 0
         try:
             weights = [total := total + i for i in tickets]
@@ -85,21 +85,21 @@ def draw_jackpot_winner():
         random = rd.random() * total
         winner_index = bisect.bisect(weights, random)
         winner = users[winner_index]
-        Models.JackpotsResults.objects.create(winner=winner, prize=total)
+        JackpotsResults.objects.create(winner=winner, prize=total)
         winner.money += total
         winner.save()
-        Models.Jackpot.objects.all().delete()
+        Jackpot.objects.all().delete()
         set_last_jackpot_info()
 
 
 def reset_daily():
-    Models.CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
-    Models.CasinoPlayers.objects.all().update(take_daily=False, today_lost_money=0, today_won_money=0)
+    CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
+    CasinoPlayers.objects.all().update(take_daily=False, today_lost_money=0, today_won_money=0)
 
 
 def set_last_jackpot_info():
     try:
-        last_jackpot = Models.JackpotsResults.objects.all().order_by("-id")
+        last_jackpot = JackpotsResults.objects.all().order_by("-id")
         try:
             last_jackpot = last_jackpot[0]
         except IndexError:
