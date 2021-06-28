@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.apps import apps
 from django.db.models import Sum
 from django.core.cache import cache
-from .utils import serialize
+
+from .utils import serialize_to_json
+
 # Create your views here.
 
 CasinoPlayers = apps.get_model("casino", "CasinoPlayers")
@@ -12,7 +14,7 @@ UsersTotalMoneyHistory = apps.get_model("casino", "UsersTotalMoneyHistory")
 JackpotsResults = apps.get_model("casino", "JackpotsResults")
 
 
-class NonLoggedUser:
+class NotLoggedUser:
     today_won_money = 0
     today_lost_money = 0
 
@@ -21,20 +23,20 @@ def index(request):
     if request.user.is_authenticated:
         user_player = CasinoPlayers.objects.get(user=request.user)
         user_money_statistic_data = MoneyHistory.objects.filter(player=user_player)
-        user_money_statistic_data = serialize(user_money_statistic_data)
+        user_money_statistic_data = serialize_to_json(user_money_statistic_data)
         user_money_daily_statistic_data = TwentyFourHoursMoneyHistory.objects.filter(player=user_player)
-        user_money_daily_statistic_data = serialize(user_money_daily_statistic_data)
+        user_money_daily_statistic_data = serialize_to_json(user_money_daily_statistic_data)
     else:
-        user_player = NonLoggedUser
+        user_player = NotLoggedUser
         user_money_statistic_data = []
         user_money_daily_statistic_data = []
 
     players = CasinoPlayers.objects.all().order_by("-money")[:10]
 
     last_jackpots_wins = JackpotsResults.objects.all()
-    last_jackpots_wins = serialize(last_jackpots_wins, 5)
+    last_jackpots_wins = serialize_to_json(last_jackpots_wins, 5)
     users_total_money_history = UsersTotalMoneyHistory.objects.all()
-    users_total_money_history = serialize(users_total_money_history)
+    users_total_money_history = serialize_to_json(users_total_money_history)
 
     try:
         coins_sum = int(CasinoPlayers.objects.aggregate(total=Sum("money"))["total"])
