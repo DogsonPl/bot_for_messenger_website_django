@@ -98,11 +98,14 @@ $("#jackpot").on("submit", function(event){
         success: function(response){
             let status = response["status"]
             let modal_message = ""
-            if(status===1){
+            if(status==1){
                 modal_message = "Nie masz wystarczająco pieniędzy"
             }
-            else if(status===0){
+            else if(status==0){
                 modal_message = "Kupiono " + response["tickets"] + " biletów"
+            }
+            else if(status==2){
+                modal_message = "💤 Obecnie trwa losowanie, spróbuj za kilka sekund"
             }
             send_modal_message(modal_message)
             let user_money_formatted = parseFloat(response["player_money"]).toFixed(2)

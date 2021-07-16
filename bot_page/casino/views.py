@@ -151,6 +151,8 @@ def jackpot_buy_fb(request):
         status = casino_actions.buy_ticket(player, tickets_to_buy)
         if status == 0:
             message = f"✅ Kupiono {tickets_to_buy} biletów za {tickets_to_buy} dogecoinów. Użyj komendy !jacpkot żeby dostać więcej informacji"
-        else:
+        elif status == 2:
             message = f"🚫 Nie masz wystarczająco dogecoinów (chciałeś kupić {tickets_to_buy} biletów, a masz {'%.2f' % player.money} dogecoinów)"
+        else:
+            message = "💤 Obecnie trwa losowanie, spróbuj za kilka sekund"
     return JsonResponse({"message": message})

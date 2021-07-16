@@ -24,6 +24,10 @@ JackpotsResults = apps.get_model("casino", "JackpotsResults")
 def init():
     from django_apscheduler.jobstores import DjangoJobStore
 
+    # these cache values prevent from deadlock
+    cache.set("performing_daily_reset", False, None)
+    cache.set("performing_jackpot_draw", False, None)
+
     scheduler = BackgroundScheduler(timezone=settings.TIME_ZONE)
     scheduler.add_jobstore(DjangoJobStore(), "default")
 
@@ -66,6 +70,8 @@ def save_money_sum_of_all_players():
 
 @transaction.atomic
 def draw_jackpot_winner():
+    cache.set("performing_jackpot_draw", True, None)
+
     players = Jackpot.objects.all()
     if len(players) == 0:
         # no one bought tickets to play in jackpot
@@ -91,10 +97,16 @@ def draw_jackpot_winner():
         Jackpot.objects.all().delete()
         set_last_jackpot_info()
 
+        cache.set("performing_jackpot_draw", False, None)
+
 
 def reset_daily():
+    cache.set("performing_daily_reset", True, None)
+
     CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
     CasinoPlayers.objects.all().update(take_daily=False, today_lost_money=0, today_won_money=0)
+
+    cache.set("performing_daily_reset", False, None)
 
 
 def set_last_jackpot_info():

@@ -12,6 +12,8 @@ getcontext().prec = 20
 
 
 def set_daily(player) -> str:
+    if cache.get("performing_daily_reset"):
+        return """💤 Obecnie jest wykonywany reset, spróbuj ponownie za kilka sekund"""
     if not player.take_daily:
         players_who_took_daily = CasinoPlayers.objects.filter(take_daily=True)
         if len(players_who_took_daily) == 0:
@@ -83,8 +85,11 @@ def buy_ticket(player, tickets_to_buy: int) -> int:
     the ticket costs 1 dogecoin
     status 0 --> player bought tickets
     status 1 --> player doesn't have enough money to buy tickets
+    status 2 --> page is performing jackpot draw
     """
-    if player.money > tickets_to_buy:
+    if cache.get("performing_jackpot_draw", None):
+        status = 2
+    elif player.money > tickets_to_buy:
         status = 0
         player.money -= tickets_to_buy
         jackpot, crated = Jackpot.objects.get_or_create(player=player)
