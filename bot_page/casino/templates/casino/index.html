@@ -1,7 +1,10 @@
 {% extends "base.html" %}
+
 {% load static %}
-{% load crispy_forms_tags %}
 {% load humanize %}
+
+{% load crispy_forms_tags %}
+{% load casino %}
 
 {% block title %} Kasyno {% endblock %}
 
@@ -21,7 +24,7 @@
                     </header>
                 </div>
                 <div class="card-body pt-0">
-                    <p>Posiadasz <span id="user_money">{{player.money | floatformat:2}}</span> monet</p>
+                    <p>Posiadasz <span id="user_money">{{player.money | format_money}}</span> monet</p>
                     <p>Twój daily strike wynosi <span id="daily_strike">{{player.daily_strike}}</span></p>
                     {% if player.take_daily == 0 %}
                     <button class="btn btn-primary" id="daily_button" type="button">Odbierz daily</button>

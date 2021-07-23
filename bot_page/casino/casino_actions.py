@@ -7,6 +7,7 @@ from django.core.cache import cache
 
 from utils import statistic_data
 from .models import Jackpot, CasinoPlayers
+from .utils import format_money
 
 getcontext().prec = 20
 
@@ -49,7 +50,7 @@ def make_bet(player, percent_to_win: int, wage: float):
         player.money += won_money
         player.today_lost_money += float(won_money)
         message = f"""<strong>📉 Przegrano {'%.2f' % wage} dogecoinów</strong>.  
-Masz ich obecnie {'%.2f' % player.money} 
+Masz ich obecnie {format_money(player.money)} 
 Wylosowana liczba: {lucky_number}"""
     else:
         player.won_bets += 1
@@ -58,7 +59,7 @@ Wylosowana liczba: {lucky_number}"""
         player.money += won_money
         player.today_won_money += float(won_money)
         message = f"""<strong>📈 Wygrano {'%.2f' % won_money} dogecoinów</strong>.  
-Masz ich obecnie {'%.2f' % player.money} 
+Masz ich obecnie {format_money(player.money)} 
 Wylosowana liczba: {lucky_number}"""
 
         if cache.get("max_bet_win") < won_money:

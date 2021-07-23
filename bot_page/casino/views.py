@@ -6,11 +6,12 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import CasinoPlayers, BetsHistory, Jackpot
 from .forms import BetForm, JackpotForm
-from .utils import check_post_password
+from .utils import check_post_password, format_money
 from . import casino_actions
 
 
 FB_REGISTER_ACCOUNT_MESSAGE = "💡 Użyj polecenia !register żeby móc się bawić w kasyno. Wszystkie dogecoiny są sztuczne"
+
 
 class EmptyBet:
     date = ""
@@ -64,7 +65,7 @@ def set_daily(request):
     if request.method == "POST" and request.user.is_authenticated:
         player = CasinoPlayers.objects.get(user=request.user)
         message = casino_actions.set_daily(player)
-        return JsonResponse({"player_money": player.money, "daily_strike": player.daily_strike, "received": message})
+        return JsonResponse({"player_money": format_money(player.money), "daily_strike": player.daily_strike, "received": message})
     else:
         return JsonResponse({"status": "forbidden"})
 
@@ -99,7 +100,7 @@ def make_bet(request):
             bet = BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=lucky_number,
                                              amount=wage, win=result, money=won_money)
 
-            return JsonResponse({"status": status, "message": message, "player_money": player.money,
+            return JsonResponse({"status": status, "message": message, "player_money": format_money(player.money),
                                  "date": "Now", "amount": wage, "user_number": percent_to_win,
                                  "drown_number": lucky_number, "win": result, "money": bet.money})
     else:
@@ -134,7 +135,7 @@ def jackpot_buy(request):
         player = CasinoPlayers.objects.get(user=request.user)
         tickets_to_buy = abs(int(request.POST["tickets"]))
         status = casino_actions.buy_ticket(player, tickets_to_buy)
-        return JsonResponse({"status": status, "tickets": tickets_to_buy, "player_money": player.money})
+        return JsonResponse({"status": status, "tickets": tickets_to_buy, "player_money": format_money(player.money)})
     else:
         return JsonResponse({"status": "forbidden"})
 
@@ -152,7 +153,7 @@ def jackpot_buy_fb(request):
         if status == 0:
             message = f"✅ Kupiono {tickets_to_buy} biletów za {tickets_to_buy} dogecoinów. Użyj komendy !jacpkot żeby dostać więcej informacji"
         elif status == 2:
-            message = f"🚫 Nie masz wystarczająco dogecoinów (chciałeś kupić {tickets_to_buy} biletów, a masz {'%.2f' % player.money} dogecoinów)"
+            message = f"🚫 Nie masz wystarczająco dogecoinów (chciałeś kupić {tickets_to_buy} biletów, a masz {format_money(player.money)} dogecoinów)"
         else:
             message = "💤 Obecnie trwa losowanie, spróbuj za kilka sekund"
     return JsonResponse({"message": message})

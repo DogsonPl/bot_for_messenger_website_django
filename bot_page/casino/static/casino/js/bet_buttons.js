@@ -15,7 +15,7 @@ function divide(){
 }
 
 function max(){
-    bet_coins.value = user_money.textContent - 0.05
+    bet_coins.value = user_money.textContent
     multiplier_label.innerHTML = parseFloat(((bet_coins.value / (percent_slider.value / 100)) - bet_coins.value) * 0.99).toFixed(2)
 }
 
@@ -27,8 +27,3 @@ bet_form.oninput = function(){
     multiplier_label.innerHTML = parseFloat(((bet_coins.value / (percent_slider.value / 100)) - bet_coins.value) * 0.99).toFixed(2)
 }
 
-form_bet_money.oninput = function(){
-    if(this.value > parseFloat(user_money.textContent - 0.05)){
-        this.value = user_money.textContent - 0.05
-    }
-}

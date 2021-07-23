@@ -1,4 +1,5 @@
 from secrets import compare_digest
+from math import floor
 
 from django.http import JsonResponse
 from django.contrib.auth import settings
@@ -16,3 +17,9 @@ def check_post_password(function):
             pass
         return JsonResponse({"status": "forbidden"})
     return wrapper
+
+
+def format_money(num):
+    """:returns rounded number to lower (2 digits)"""
+    formatted_money = floor(num*100)/100
+    return formatted_money
