@@ -39,7 +39,7 @@ def register_(request):
         try:
             user = User.objects.get(email=user_mail)
         except ObjectDoesNotExist:
-            if form.is_valid():
+            if form.is_valid() and "+" not in user_mail:
                 utils.send_account_activation_email(request, form, user_mail)
                 return render(request, "login/waiting_for_confirmation.html", {"nav_bar": "account", "mail": user_mail})
             else:
