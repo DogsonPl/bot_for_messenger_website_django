@@ -7,5 +7,8 @@ register = template.Library()
 
 @register.filter
 def format_money(num):
-    formatted_money = floor(num*100)/100
+    try:
+        formatted_money = floor(num*100)/100
+    except TypeError:
+        formatted_money = num
     return formatted_money
