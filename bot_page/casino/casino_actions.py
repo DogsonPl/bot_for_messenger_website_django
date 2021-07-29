@@ -88,7 +88,7 @@ def buy_ticket(player, tickets_to_buy: int) -> int:
     status 1 --> player doesn't have enough money to buy tickets
     status 2 --> page is performing jackpot draw
     """
-    if cache.get("performing_jackpot_draw", None):
+    if cache.get("performing_jackpot_draw"):
         status = 2
     elif player.money > tickets_to_buy:
         status = 0
