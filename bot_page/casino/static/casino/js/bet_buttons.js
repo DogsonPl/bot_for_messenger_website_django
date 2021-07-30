@@ -6,12 +6,12 @@ const bet_form = document.getElementById("bet")
 
 function multiply(){
     bet_coins.value *= 2
-    multiplier_label.innerHTML = parseFloat(((bet_coins.value / (percent_slider.value / 100)) - bet_coins.value) * 0.99).toFixed(2)
+    update_multiplier_label()
 }
 
 function divide(){
     bet_coins.value /= 2
-    multiplier_label.innerHTML = parseFloat(((bet_coins.value / (percent_slider.value / 100)) - bet_coins.value) * 0.99).toFixed(2)
+    update_multiplier_label()
 }
 
 function max(){
@@ -19,7 +19,7 @@ function max(){
     if(confirm)
     {
         bet_coins.value = user_money.textContent
-        multiplier_label.innerHTML = parseFloat(((bet_coins.value / (percent_slider.value / 100)) - bet_coins.value) * 0.99).toFixed(2)
+        update_multiplier_label()
     }
 }
 
@@ -28,5 +28,10 @@ percent_slider.oninput = function(){
 }
 
 bet_form.oninput = function(){
+    update_multiplier_label()
+}
+
+
+function update_multiplier_label(){
     multiplier_label.innerHTML = parseFloat(((bet_coins.value / (percent_slider.value / 100)) - bet_coins.value) * 0.99).toFixed(2)
 }
