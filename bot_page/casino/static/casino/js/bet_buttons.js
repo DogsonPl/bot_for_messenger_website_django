@@ -15,8 +15,12 @@ function divide(){
 }
 
 function max(){
-    bet_coins.value = user_money.textContent
-    multiplier_label.innerHTML = parseFloat(((bet_coins.value / (percent_slider.value / 100)) - bet_coins.value) * 0.99).toFixed(2)
+    let confirm = window.confirm("Czy chcesz zabetować wszystkimi dogami?")
+    if(confirm)
+    {
+        bet_coins.value = user_money.textContent
+        multiplier_label.innerHTML = parseFloat(((bet_coins.value / (percent_slider.value / 100)) - bet_coins.value) * 0.99).toFixed(2)
+    }
 }
 
 percent_slider.oninput = function(){
@@ -26,4 +30,3 @@ percent_slider.oninput = function(){
 bet_form.oninput = function(){
     multiplier_label.innerHTML = parseFloat(((bet_coins.value / (percent_slider.value / 100)) - bet_coins.value) * 0.99).toFixed(2)
 }
-
