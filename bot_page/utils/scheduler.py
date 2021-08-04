@@ -104,7 +104,7 @@ def reset_daily():
     cache.set("performing_daily_reset", True, None)
 
     CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
-    CasinoPlayers.objects.all().update(take_daily=False, today_lost_money=0, today_won_money=0)
+    CasinoPlayers.objects.all().update(take_daily=False, today_lost_money=0, today_won_money=0, today_scratch_profit=0)
 
     cache.set("performing_daily_reset", False, None)
 

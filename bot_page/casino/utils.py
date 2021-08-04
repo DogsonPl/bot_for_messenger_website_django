@@ -15,7 +15,7 @@ def check_post_password(function):
                 return function(request)
         except TypeError:
             pass
-        return JsonResponse({"status": "forbidden"})
+        return JsonResponse({"message": "forbidden"})
     return wrapper
 
 

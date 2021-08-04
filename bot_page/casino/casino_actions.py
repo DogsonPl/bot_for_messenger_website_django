@@ -1,15 +1,38 @@
 from decimal import Decimal, getcontext
 import os
+import bisect
 import struct
+from datetime import datetime, timedelta
+import pytz
 
 from django.db import transaction
 from django.core.cache import cache
+from django.conf import settings
 
 from utils import statistic_data
 from .models import Jackpot, CasinoPlayers
 from .utils import format_money
 
 getcontext().prec = 20
+
+
+# key - prize
+# value - chance to win
+SCRATCH_PRIZES_DICT = {"0": 20,
+                  "1": 19,
+                  "2": 18,
+                  "5": 17,
+                  "7": 12,
+                  "14": 6,
+                  "25": 5,
+                  "35": 2.4,
+                  "300": 0.5,
+                  "1500": 0.1}
+SCRATCH_CHANCES = [i for i in SCRATCH_PRIZES_DICT.values()]
+SCRATCH_PRIZES = [int(i) for i, _ in SCRATCH_PRIZES_DICT.items()]
+PRIZES_SUM = 0
+total = 0
+SCRATCH_PRIZES_WEIGHTS = [total := total + i for i in SCRATCH_CHANCES]
 
 
 def set_daily(player) -> str:
@@ -102,8 +125,35 @@ def buy_ticket(player, tickets_to_buy: int) -> int:
     return status
 
 
-def get_random_number() -> int:
+def buy_scratch_card(player):
+    if player.money < 5:
+        return "🚫 Nie masz wystarczająco dogecoinów by kupić zdrapke, koszt zdrapki to 5 dogecoinów"
+    try:
+        if player.last_time_scratch > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)) - timedelta(minutes=30):
+            return "⏳ Możesz kupić jedną zdrapke w ciągu 30 minut"
+    except TypeError:
+        pass
+    scratch_prize = get_scratch_prize()
+    profit = scratch_prize-5
+    player.money += profit
+    player.last_time_scratch = datetime.now(tz=pytz.timezone(settings.TIME_ZONE))
+    player.today_scratch_profit += profit
+    player.save()
+
+    return f"""🔢 W zdrapce wygrałeś/aś {scratch_prize} dogów, profit to {profit} dogów" \
+Obecnie posiadasz {format_money(player.money)}"""
+
+
+def get_scratch_prize() -> int:
+    random_number = get_random_number()
+    prize_index = bisect.bisect(SCRATCH_PRIZES_WEIGHTS, random_number)
+    prize = SCRATCH_PRIZES[prize_index]
+    return prize
+
+
+def get_random_number() -> float:
     """:return random number from 0 to 99"""
     random_bytes = os.urandom(2)
-    random = struct.unpack("H", random_bytes)[0] % 100   # "H" --> unsigned short
+    random = struct.unpack("H", random_bytes)[0] % 1000   # "H" --> unsigned short
+    random /= 10
     return random

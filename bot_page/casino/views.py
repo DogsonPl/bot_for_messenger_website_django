@@ -157,3 +157,15 @@ def jackpot_buy_fb(request):
         else:
             message = "💤 Obecnie trwa losowanie, spróbuj za kilka sekund"
     return JsonResponse({"message": message})
+
+
+@csrf_exempt
+@check_post_password
+def buy_scratch_card_fb(request):
+    try:
+        player = CasinoPlayers.objects.get(user_fb_id=request.POST["user_fb_id"])
+    except ObjectDoesNotExist:
+        message = FB_REGISTER_ACCOUNT_MESSAGE
+    else:
+        message = casino_actions.buy_scratch_card(player)
+    return JsonResponse({"message": message})
