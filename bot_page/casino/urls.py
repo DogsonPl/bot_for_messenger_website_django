@@ -12,5 +12,6 @@ urlpatterns = [
     path("bet_fb", views.make_bet_fb, name="bet_fb"),
     path("jackpot_buy", views.jackpot_buy, name="jackpot_buy"),
     path("jackpot_buy_fb", views.jackpot_buy_fb, name="jackpot_buy_fb"),
+    path("buy_scratch_card", views.buy_scratch_card, name="buy_scratch_card"),
     path("buy_scratch_card_fb", views.buy_scratch_card_fb, name="buy_scratch_card_fb")
 ]

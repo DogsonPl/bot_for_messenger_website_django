@@ -18,16 +18,16 @@ getcontext().prec = 20
 
 # key - prize
 # value - chance to win
-SCRATCH_PRIZES_DICT = {"0": 20,
-                  "1": 19,
-                  "2": 18,
-                  "5": 17,
-                  "7": 12,
-                  "14": 6,
-                  "25": 5,
-                  "35": 2.4,
-                  "300": 0.5,
-                  "1500": 0.1}
+SCRATCH_PRIZES_DICT = {"0": 19,
+                       "1": 18,
+                       "2": 17,
+                       "5": 15,
+                       "7": 12,
+                       "15": 9,
+                       "20": 7,
+                       "50": 2.4,
+                       "500": 0.5,
+                       "1500": 0.1}
 SCRATCH_CHANCES = [i for i in SCRATCH_PRIZES_DICT.values()]
 SCRATCH_PRIZES = [int(i) for i, _ in SCRATCH_PRIZES_DICT.items()]
 PRIZES_SUM = 0
@@ -129,8 +129,9 @@ def buy_scratch_card(player):
     if player.money < 5:
         return "🚫 Nie masz wystarczająco dogecoinów by kupić zdrapke, koszt zdrapki to 5 dogecoinów"
     try:
-        if player.last_time_scratch > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)) - timedelta(minutes=30):
-            return "⏳ Możesz kupić jedną zdrapke w ciągu 30 minut"
+        if player.last_time_scratch > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)) - timedelta(minutes=20):
+            return f"""⏳ Możesz kupić jedną zdrapke w ciągu 20 minut
+Kolejną możesz odebrać za {str(player.last_time_scratch + timedelta(minutes=20) - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7]} minut"""
     except TypeError:
         pass
     scratch_prize = get_scratch_prize()
@@ -140,7 +141,7 @@ def buy_scratch_card(player):
     player.today_scratch_profit += profit
     player.save()
 
-    return f"""🔢 W zdrapce wygrałeś/aś {scratch_prize} dogów, profit to {profit} dogów" \
+    return f"""🔢 W zdrapce wygrałeś/aś {scratch_prize} dogów, profit to {profit} dogów
 Obecnie posiadasz {format_money(player.money)}"""
 
 

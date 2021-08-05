@@ -159,6 +159,15 @@ def jackpot_buy_fb(request):
     return JsonResponse({"message": message})
 
 
+def buy_scratch_card(request):
+    if request.method == "POST":
+        player = CasinoPlayers.objects.get(user=request.user)
+        message = casino_actions.buy_scratch_card(player)
+        return JsonResponse({"message": message, "player_money": format_money(player.money)})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
 @csrf_exempt
 @check_post_password
 def buy_scratch_card_fb(request):
