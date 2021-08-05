@@ -13,12 +13,14 @@ class CasinoPlayers(models.Model):
     email = models.EmailField(unique=True, blank=True, null=True, max_length=100)
     take_daily = models.BooleanField(default=0)
     daily_strike = models.PositiveSmallIntegerField(default=0)
+    total_bets = models.PositiveIntegerField(default=0)
     won_bets = models.PositiveBigIntegerField(default=0)
     lost_bets = models.PositiveBigIntegerField(default=0)
     today_won_money = models.FloatField(default=0)
     today_lost_money = models.FloatField(default=0)
     today_scratch_profit = models.IntegerField(default=0)
     last_time_scratch = models.DateTimeField(blank=True, null=True)
+    today_scratch_bought = models.PositiveSmallIntegerField(default=0)
 
     class Meta:
         verbose_name = "Player"

@@ -139,6 +139,7 @@ Kolejną możesz odebrać za {str(player.last_time_scratch + timedelta(minutes=2
     player.money += profit
     player.last_time_scratch = datetime.now(tz=pytz.timezone(settings.TIME_ZONE))
     player.today_scratch_profit += profit
+    player.today_scratch_bought += 1
     player.save()
 
     return f"""🔢 W zdrapce wygrałeś/aś {scratch_prize} dogów, profit to {profit} dogów
