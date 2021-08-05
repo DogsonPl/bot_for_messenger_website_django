@@ -266,7 +266,8 @@
 						<tr>
 							<td width="100%" valign="top">
 								<p style="font-family: sans-serif; font-weight: 400; font-size: 1.125rem; color: #4b4b4c !important; margin: 10px 0 !important;">
-                                    Kliknij w <a href="{{ domain }}{% url 'account:activate' uidb64=uid token=token %}">Link</a> by potwiedzić maila i dokończyć rejestrację konta
+                                    Kliknij w <a href="{{ domain }}{% url 'account:activate' uidb64=uid token=token %}">Link</a> by potwiedzić maila i dokończyć rejestrację konta <br>
+									Jeśli kliknięcie w link nie działa, skopiuj ten link do przeglądarki: dogson.ovh/account/activate/{{ uid }}/{{ token }}
                                 </p>
 							</td>
 						</tr>
