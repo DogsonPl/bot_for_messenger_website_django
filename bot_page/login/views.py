@@ -39,11 +39,11 @@ def register_(request):
         try:
             user = User.objects.get(email=user_mail)
         except ObjectDoesNotExist:
-            if form.is_valid() and "+" not in user_mail:
+            if form.is_valid() and "+" not in user_mail and "." not in user_mail[0:-4]:
                 utils.send_account_activation_email(request, form, user_mail)
                 return render(request, "login/waiting_for_confirmation.html", {"nav_bar": "account", "mail": user_mail})
             else:
-                messages.error(request, "Hasła się nie zgadzają, albo wpisałeś złego maila")
+                messages.error(request, "Hasła się nie zgadzają, albo mail na który chcesz założyć konto nie spełnia wymagań (spróbuj usunąć '.' w środku maila jeśli posiada), założ konto na np gmailu")
         else:
             if user.is_active:
                 messages.error(request, "Konto z takim mailem istnieje")
