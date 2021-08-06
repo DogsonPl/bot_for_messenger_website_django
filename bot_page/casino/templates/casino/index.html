@@ -41,6 +41,7 @@
             <div class="card">
                 <div class="card-body">
                     <button class="btn btn-warning" type="button" id="scratch_button">Kup zdrapke (5 dogów)</button>
+                    <p id="scratch_timeout_p">Możesz odebrać zdrapke</p>
                 </div>
             </div>
         </div>
@@ -235,5 +236,46 @@
             html: true})
 })
 
+</script>
+<script>
+    let scratch_timeout_p = document.getElementById("scratch_timeout_p")
+    var scratch_timeout = "{{ scratch_timeout }}"
+    if(scratch_timeout.includes(":"))
+    {
+        scratch_button.disabled = true
+        scratch_timeout_p.innerHTML = "Możesz odebrać zdrapke za " + scratch_timeout + " minut"
+        var scratch_timer = setInterval(update_scratch_timeout, 1000)
+    }
+
+    function update_scratch_timeout()
+    {
+        let min = parseInt(scratch_timeout.split(":")[0])
+        let sec = parseInt(scratch_timeout.split(":")[1])
+        if(sec==0)
+        {
+            min -= 1
+            sec = 59
+        }
+        else
+        {
+            sec -= 1
+            if(sec < 10)
+            {
+                sec = "0"+sec
+            }
+        }
+
+        if(min==-1)
+        {
+            scratch_timeout_p.innerHTML = "Możesz odebrać zdrapke"
+            scratch_button.disabled = false
+            clearInterval(scratch_timer)
+        }
+        else
+        {
+            scratch_timeout = min + ":" + sec
+            scratch_timeout_p.innerHTML = "Możesz odebrać zdrapke za " + scratch_timeout + " minut"
+        }
+    }
 </script>
 {% endblock %}

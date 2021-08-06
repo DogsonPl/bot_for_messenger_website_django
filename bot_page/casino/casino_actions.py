@@ -11,7 +11,7 @@ from django.conf import settings
 
 from utils import statistic_data
 from .models import Jackpot, CasinoPlayers
-from .utils import format_money
+from .utils import format_money, count_scratch_card_timeout
 
 getcontext().prec = 20
 
@@ -130,8 +130,9 @@ def buy_scratch_card(player):
         return "🚫 Nie masz wystarczająco dogecoinów by kupić zdrapke, koszt zdrapki to 5 dogecoinów"
     try:
         if player.last_time_scratch > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)) - timedelta(minutes=20):
+            timeout = count_scratch_card_timeout(player)
             return f"""⏳ Możesz kupić jedną zdrapke w ciągu 20 minut
-Kolejną możesz odebrać za {str(player.last_time_scratch + timedelta(minutes=20) - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7]} minut"""
+Kolejną możesz odebrać za {timeout} minut"""
     except TypeError:
         pass
     scratch_prize = get_scratch_prize()

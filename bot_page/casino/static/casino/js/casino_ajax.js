@@ -137,6 +137,10 @@ $("#scratch_button").on("click", function(event){
             user_money.innerHTML = player_money
             user_money_navbar.innerHTML = player_money
             send_modal_message(response["message"])
+            scratch_button.disabled = true
+            scratch_timeout = "19:59"
+            scratch_timeout_p.innerHTML = "Możesz odebrać zdrapke za " + scratch_timeout + " minut"
+            var scratch_timer = setInterval(update_scratch_timeout, 1000, [scratch_timeout])
         },
         error: function(error){
             send_modal_message("Ups, nastąpił błąd po stronie serwera. Spróbuj ponownie później")

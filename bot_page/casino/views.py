@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import CasinoPlayers, BetsHistory, Jackpot
 from .forms import BetForm, JackpotForm
-from .utils import check_post_password, format_money
+from .utils import check_post_password, format_money, count_scratch_card_timeout
 from . import casino_actions
 
 
@@ -48,6 +48,8 @@ def index(request):
         bet_form = BetForm(initial={"bet_money": 0})
         jackpot_form = JackpotForm(initial={"tickets": 0})
 
+        scratch_timeout = count_scratch_card_timeout(player)
+
         return render(request, "casino/index.html", {"nav_bar": "casino",
                                                      "bet_form": bet_form,
                                                      "jackpot_form": jackpot_form,
@@ -55,7 +57,8 @@ def index(request):
                                                      "user_bets": user_bets,
                                                      "last_bets": last_bets,
                                                      "total_tickets": total_tickets,
-                                                     "user_tickets": user_tickets})
+                                                     "user_tickets": user_tickets,
+                                                     "scratch_timeout": scratch_timeout})
     else:
         # todo demo page
         return redirect("account:login")

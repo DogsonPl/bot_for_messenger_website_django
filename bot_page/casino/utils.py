@@ -1,5 +1,7 @@
 from secrets import compare_digest
 from math import floor
+from datetime import datetime, timedelta
+import pytz
 
 from django.http import JsonResponse
 from django.contrib.auth import settings
@@ -23,3 +25,7 @@ def format_money(num):
     """:returns rounded number to lower (2 digits)"""
     formatted_money = floor(num*100)/100
     return formatted_money
+
+
+def count_scratch_card_timeout(player) -> str:
+    return str(player.last_time_scratch + timedelta(minutes=20) - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7]
