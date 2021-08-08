@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.db.models import ObjectDoesNotExist
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, OperationalError
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
 from django.contrib import messages
@@ -51,6 +51,8 @@ def change_player_nickname(request, player):
         request.user.save()
     except IntegrityError:
         messages.error(request, "Ten nick jest obecnie w użyciu")
+    except OperationalError:
+        messages.error(request, "Użyłeś nieprawidłowego znaku (najprawdopodobniej emotki)")
     else:
         player.money -= 100
         player.save()
