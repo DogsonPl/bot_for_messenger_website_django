@@ -114,7 +114,8 @@ DATABASES = {
         'USER': config_parser.get("database", "user"),
         'PASSWORD': config_parser.get("database", "password"),
         'HOST': config_parser.get("database", "host"),
-        'PORT': config_parser.get("database", "port")
+        'PORT': config_parser.get("database", "port"),
+        'OPTIONS': {"charset": "utf8mb4"}
     }
 }
 

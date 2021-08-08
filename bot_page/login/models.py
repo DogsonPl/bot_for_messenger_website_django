@@ -20,6 +20,8 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
+    username = models.CharField('username', max_length=100, unique=True,
+                                error_messages={'unique': "A user with that username already exists."})
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = CustomUserManager()

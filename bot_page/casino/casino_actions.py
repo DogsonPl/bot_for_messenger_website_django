@@ -144,7 +144,7 @@ Kolejną możesz odebrać za {timeout} minut"""
     player.save()
 
     return f"""🔢 W zdrapce wygrałeś/aś {scratch_prize} dogów, profit to {profit} dogów
-Obecnie posiadasz {format_money(player.money)}"""
+Obecnie posiadasz {format_money(player.money)} dogów"""
 
 
 def get_scratch_prize() -> int:
