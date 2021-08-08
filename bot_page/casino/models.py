@@ -65,7 +65,7 @@ class JackpotsResults(models.Model):
 class BetsHistory(models.Model):
     player = models.ForeignKey(CasinoPlayers, null=True, on_delete=models.SET_NULL, related_name="player_bets_history")
     user_number = models.PositiveSmallIntegerField(null=False, blank=False)
-    drown_number = models.PositiveSmallIntegerField(null=False, blank=False)
+    drown_number = models.FloatField(null=False, blank=False)
     amount = models.FloatField(null=False, blank=False)
     # 0 - user lost, 1 - user won
     win = models.BooleanField(null=False, blank=False)

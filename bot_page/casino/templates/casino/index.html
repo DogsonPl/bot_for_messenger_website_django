@@ -41,7 +41,7 @@
             <div class="card">
                 <div class="card-body">
                     <button class="btn btn-warning" type="button" id="scratch_button">Kup zdrapke (5 dogów)</button>
-                    <p id="scratch_timeout_p">Możesz odebrać zdrapke</p>
+                    <p class="mt-1" id="scratch_timeout_p">Możesz odebrać zdrapke</p>
                 </div>
             </div>
         </div>
@@ -234,9 +234,9 @@
                     <li class='text-dark'>Jeden bilet to jeden los</li>
                     <li class='text-dark'>Na końcu dnia jest losowanie, osoba której bilet zostanie wylosowany wygrywa dogecoiny (każdy kupiony bilet zwiększa pule nagród o jeden dogecoin)</li></ul>`,
             html: true})
-})
-
+    })
 </script>
+
 <script>
     let scratch_timeout_p = document.getElementById("scratch_timeout_p")
     var scratch_timeout = "{{ scratch_timeout }}"
