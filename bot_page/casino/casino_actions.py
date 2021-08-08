@@ -27,7 +27,7 @@ SCRATCH_PRIZES_DICT = {"0": 19,
                        "20": 7,
                        "50": 2.4,
                        "500": 0.5,
-                       "1500": 0.1}
+                       "2500": 0.1}
 SCRATCH_CHANCES = [i for i in SCRATCH_PRIZES_DICT.values()]
 SCRATCH_PRIZES = [int(i) for i, _ in SCRATCH_PRIZES_DICT.items()]
 PRIZES_SUM = 0

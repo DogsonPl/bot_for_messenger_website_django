@@ -15,8 +15,8 @@
 {% block content %}
 
 <main>
-    <div class="row">
-        <div class="col-12">
+    <div class="row text-center text-md-left">
+        <div class="col-sm-6">
             <div class="card">
                 <div class="card-header">
                     <header>
@@ -34,27 +34,28 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
+        <div class="col-sm-6">
             <div class="card">
                 <div class="card-body">
                     <button class="btn btn-warning" type="button" id="scratch_button">Kup zdrapke (5 dogów)</button>
                     <p class="mt-1" id="scratch_timeout_p">Możesz odebrać zdrapke</p>
+                    <!-- add "fill" (bi-info-circle-fill) in class name if you want fill info icon with color -->
+                    <div><i class="bi bi-info-circle" id="scratch_card_info" style="color: red;"></i></div>
                 </div>
             </div>
         </div>
     </div>
 
+
+
     <div class="row">
-        <div class="col-6">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <form id="bet">
                         {% csrf_token %}
                         {{ bet_form | crispy }}
-                        <div class="row">
+                        <div class="row text-center">
                             <div class="col">
                                 <button class="btn btn-primary" id="bet_button" type="submit">Betuj</button>
                             </div>
@@ -73,7 +74,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
                     <form id="jackpot">
@@ -230,10 +231,29 @@
     $(document).ready(function(){
         $("#jackpot_info").tooltip(
             {title: `📑 Zasady:
-                    <ul class='text-left'><li class='text-dark'>Każdy bilet kosztuje 1 dogecoin</li>
-                    <li class='text-dark'>Jeden bilet to jeden los</li>
-                    <li class='text-dark'>Na końcu dnia jest losowanie, osoba której bilet zostanie wylosowany wygrywa dogecoiny (każdy kupiony bilet zwiększa pule nagród o jeden dogecoin)</li></ul>`,
+                    <ul class='text-left'>
+                        <li class='text-dark'>Każdy bilet kosztuje 1 dogecoin</li>
+                        <li class='text-dark'>Jeden bilet to jeden los</li>
+                        <li class='text-dark'>Na końcu dnia jest losowanie, osoba której bilet zostanie wylosowany wygrywa dogecoiny (każdy kupiony bilet zwiększa pule nagród o jeden dogecoin)</li>
+                    </ul>`,
             html: true})
+
+        $("#scratch_card_info").tooltip(
+            {title: `Możesz odebrać jedną zdrapkę w ciągu 20 minut<br>
+                     Nagrody i szansa na ich wygranie:
+                     <ul class='text-left'>
+                        <li class='text-dark'>0 dogów - 19%</li>
+                        <li class='text-dark'>1 dog - 18%</li>
+                        <li class='text-dark'>2 dogi - 17%</li>
+                        <li class='text-dark'>5 dogów - 15%</li>
+                        <li class='text-dark'>7 dogów - 12%</li>
+                        <li class='text-dark'>15 dogów - 9%</li>
+                        <li class='text-dark'>20 dogów - 7%</li>
+                        <li class='text-dark'>50 dogów - 2.4%</li>
+                        <li class='text-dark'>500 dogów - 0.5%</li>
+                        <li class='text-dark'>2500 dogów - 0.1%</li>
+                     </ul>`,
+             html: true})
     })
 </script>
 

@@ -7,7 +7,7 @@ from .models import CasinoPlayers, Jackpot, JackpotsResults, BetsHistory, MoneyH
 @admin.register(CasinoPlayers)
 class CasinoPLayersAdmin(admin.ModelAdmin):
     list_display = ("__str__", "email", "money")
-    search_fields = ("email__startswith",  "user__username__startswith", "fb_name__startswith", "user_fb_id__startswith")
+    search_fields = ("email__startswith", "user__username__startswith", "fb_name__startswith", "user_fb_id__startswith")
 
 
 @admin.register(Jackpot)
