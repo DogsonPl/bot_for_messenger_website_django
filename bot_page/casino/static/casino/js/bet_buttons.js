@@ -31,6 +31,12 @@ bet_form.oninput = function(){
     update_multiplier_label()
 }
 
+bet_coins.oninput = function(){
+    if(this.value > parseFloat(user_money.textContent)){
+        this.value = user_money.textContent
+        send_modal_message("Nie masz więcej dogów")
+    }
+}
 
 function update_multiplier_label(){
     multiplier_label.innerHTML = parseFloat(((bet_coins.value / (percent_slider.value / 100)) - bet_coins.value) * 0.99).toFixed(2)
