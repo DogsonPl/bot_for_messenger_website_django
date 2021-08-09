@@ -28,4 +28,7 @@ def format_money(num):
 
 
 def count_scratch_card_timeout(player) -> str:
-    return str(player.last_time_scratch + timedelta(minutes=20) - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7]
+    try:
+        return str(player.last_time_scratch + timedelta(minutes=20) - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7]
+    except TypeError:
+        return ""
