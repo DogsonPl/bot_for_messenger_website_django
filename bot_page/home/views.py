@@ -28,14 +28,19 @@ def contact(request):
                       recipient_list=[ADMIN_EMAIL])
             return render(request, "home/thanks_for_contact.html", {"nav_bar": "contact"})
         else:
+            if request.user.is_authenticated:
+                player = CasinoPlayers.objects.get(user=request.user)
+            else:
+                player = None
             messages.info(request, "Coś poszło nie tak, spróbuj wykonać captcha")
 
-    if request.user.is_authenticated:
-        player = CasinoPlayers.objects.get(user=request.user)
-        form = forms.ContactForm(initial={"email": request.user.email})
     else:
-        player = None
-        form = forms.ContactForm()
+        if request.user.is_authenticated:
+            player = CasinoPlayers.objects.get(user=request.user)
+            form = forms.ContactForm(initial={"email": request.user.email})
+        else:
+            player = None
+            form = forms.ContactForm()
     return render(request, "home/contact.html", {"nav_bar": "contact", "form": form, "player": player})
 
 

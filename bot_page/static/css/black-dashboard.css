@@ -18856,7 +18856,7 @@ fieldset[disabled] .form-control {
 }
 
 textarea.form-control {
-  padding: 10px 10px 0 0;
+  padding: 10px 10px 0 10px;
   border: 1px solid #2b3553;
   border-radius: 2;
   line-height: 2;
