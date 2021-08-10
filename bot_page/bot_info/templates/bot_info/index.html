@@ -34,10 +34,16 @@
                 <h1 class="card-title">Główne informacje</h1>
             </div>
             <div class="card-body">
-                <h4>Status: <span class="text-danger">działa tylko na wybranych grupach, ponieważ fb go banuje</span></h4>
+                <h4>Status: <span class="text-danger">działa tylko na wybranych grupach, ponieważ obecnie fb ogranicza ilość możliwych wysyłanych wiadomości</span></h4>
                 <h4>
                     Kod żródłowy bota:
                     <a href="https://github.com/DogsonPl/bot_for_messenger" target="_blank">
+                        Github <i class="bi bi-github"></i>
+                    </a>
+                </h4>
+                <h4>
+                    Kod żródłowy strony:
+                    <a href="https://github.com/DogsonPl/bot_for_messenger_website_django" target="_blank">
                         Github <i class="bi bi-github"></i>
                     </a>
                 </h4>
@@ -50,10 +56,21 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Twoje dzisiejsze statystyki</h2>
+            </div>
             <div class="card-body">
-                <p>Wygrałeś/aś dzisiaj: {{ player.today_won_money | floatformat:2}} dogecoinów</p>
-                <p>Przegrałeś/aś dzisiaj: {{ player.today_lost_money | floatformat:2 }} dogecoinów</p>
-                <p>Dzisiejszy profit:  {{ player.today_won_money | add:player.today_lost_money }} dogecoinów</p>
+                {% if user.is_authenticated %}
+                    <h3 class="m-0">Betowanie</h3>
+                    <p class="mt-2">Wygrałeś/aś dzisiaj: {{ player.today_won_money | floatformat:2}} dogecoinów</p>
+                    <p>Przegrałeś/aś dzisiaj: {{ player.today_lost_money | floatformat:2 }} dogecoinów</p>
+                    <p>Dzisiejszy profit na betowaniu:  {{ player.today_won_money | add:player.today_lost_money }} dogecoinów</p>
+                    <h3 class="m-0 mt-3">Zdrapki</h3>
+                    <p class="mt-2">Kupiłeś/aś dzisiaj: {{ player.today_scratch_bought }} zdrapek</p>
+                    <p>Dzisiaj zdrapki dały ci: {{ player.today_scratch_profit }} dogecoinów</p>
+                {% else %}
+                    <h3><a href="{% url 'account:login' %}">Zaloguj się</a> żeby zobaczyć swoje statystyki</h3>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -71,24 +88,15 @@
                         <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
                             <label class="btn btn-sm btn-primary btn-simple active" id="0">
                                 <input type="radio" name="options" checked>
-                                <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Cały czas</span>
-                                <span class="d-block d-sm-none">
-                                    Wszystko
-                                </span>
+                                <span>Cały czas</span>
                             </label>
                             <label class="btn btn-sm btn-primary btn-simple" id="1">
                                 <input type="radio" class="d-none d-sm-none" name="options">
-                                <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Miesiąc</span>
-                                <span class="d-block d-sm-none">
-                                    Miesiąc
-                                </span>
+                                <span>Miesiąc</span>
                             </label>
                             <label class="btn btn-sm btn-primary btn-simple" id="2">
                                 <input type="radio" class="d-none" name="options">
-                                <span class="d-none d-sm-block d-md-block d-lg-block d-xl-block">Dzisiaj</span>
-                                <span class="d-block d-sm-none">
-                                    Dziś
-                                </span>
+                                <span>Dzisiaj</span>
                             </label>
                         </div>
                     </div>
@@ -97,6 +105,11 @@
             <div class="card-body">
                 <div class="chart-area">
                     <canvas id="chartBig1"></canvas>
+                    {% if not user.is_authenticated %}
+                    <div class="col-12 text-center" style="top: -65%;">
+                        <p class="h3 ml-4"><a href="{% url 'account:login' %}">Zaloguj się</a> żeby zobaczyć swoje statystyki</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -156,7 +169,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <p>Ostatnio w jackpocie {{ last_jackpot_win_prize }} dogecoinów wygrał {{ last_jackpot_winner }}</p>
+                <p>Ostatnio w jackpocie {{ last_jackpot_win_prize }} dogecoinów wygrał/a {{ last_jackpot_winner }}</p>
             </div>
         </div>
     </div>
@@ -164,7 +177,7 @@
 
 <div class="row">
     <div class="col">
-        <div class="card ">
+        <div class="card">
             <div class="card-header">
                 <h2 class="card-title">Gracze z największą ilością dogów</h2>
             </div>

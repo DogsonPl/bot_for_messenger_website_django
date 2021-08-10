@@ -11,8 +11,8 @@
             {{form | crispy}}
             <button class="btn btn-primary mt-3" type="submit">Wyślij</button>
         </form>
-         Nie masz konta? <a href="{% url 'account:register' %}">Zarejestruj się</a>
-         Zapomniałeś hasła? <a href="{% url 'reset_password' %}">Zresetuj hasło</a>
+         <p>Nie masz konta? <a href="{% url 'account:register' %}">Zarejestruj się</a></p>
+         <p>Zapomniałeś hasła? <a href="{% url 'reset_password' %}">Zresetuj hasło</a></p>
     </div>
 </div>
 
