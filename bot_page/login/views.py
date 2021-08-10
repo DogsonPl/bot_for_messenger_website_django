@@ -50,7 +50,8 @@ def register_(request):
             else:
                 utils.send_account_activation_email(request, form, user_mail)
                 return render(request, "login/waiting_for_confirmation.html", {"nav_bar": "account", "mail": user_mail})
-    form = RegisterForm()
+    else:
+        form = RegisterForm()
     return render(request, "login/register.html", {"nav_bar": "account", "form": form})
 
 
