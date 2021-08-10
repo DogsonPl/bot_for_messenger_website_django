@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block title %} Kontakt {% endblock %}
@@ -7,21 +8,25 @@
 
 <main>
     <div class="row">
-        <div class="col-md-6 m-3">
+        <div class="col-md-6 ml-3 mt-0">
             <form method="post">
                 {% csrf_token %}
                 {{form | crispy}}
-                <button class="btn btn-primary" type="submit">Wyślij</button>
+                <button class="btn btn-warning" type="submit">
+                    Wyślij <i class="bi bi-envelope-fill"></i>
+                </button>
             </form>
         </div>
+        <div class="col-md-6 d-none d-md-block" style="margin-left: -1.2vw;">
+            <img src="{% static 'home/images/message_icon.png' %}" class="img-fluid" alt="email icon">
+        </div>
     </div>
-    <div>
-        <div class="row">
-            <div class="col-md-6 m-3">
-                {% for message in messages %}
-                <div class="alert alert-danger"> {{ message }}</div>
-                {% endfor %}
-            </div>
+
+    <div class="row">
+        <div class="col-md-6 m-3">
+            {% for message in messages %}
+            <div class="alert alert-danger"> {{ message }}</div>
+            {% endfor %}
         </div>
     </div>
 </main>
