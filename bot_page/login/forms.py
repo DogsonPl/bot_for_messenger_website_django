@@ -7,8 +7,8 @@ User = get_user_model()
 
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(label="Email", widget=forms.EmailInput(attrs={"class": "form-control mb-2"}))
-    password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
+    email = forms.EmailField(label="<p>Email</p>", widget=forms.EmailInput(attrs={"class": "form-control mb-2"}))
+    password = forms.CharField(label="<p>Hasło</p>", widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
     captcha = hCaptchaField()
 
     class Meta:
@@ -16,10 +16,10 @@ class LoginForm(forms.Form):
 
 
 class RegisterForm(UserCreationForm):
-    email = forms.EmailField(label="Email", widget=forms.EmailInput(attrs={"class": "form-control mb-2"}))
-    username = forms.CharField(label="Nick", widget=forms.TextInput(attrs={"class": "form-control mb-2"}))
-    password1 = forms.CharField(label="Hasło", widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
-    password2 = forms.CharField(label="Potwierdź hasło",
+    email = forms.EmailField(label="<p>Email</p>", widget=forms.EmailInput(attrs={"class": "form-control mb-2"}))
+    username = forms.CharField(label="<p>Nick</p>", widget=forms.TextInput(attrs={"class": "form-control mb-2"}))
+    password1 = forms.CharField(label="<p>Hasło</p>", widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
+    password2 = forms.CharField(label="<p>Potwierdź hasło</p>",
                                 widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
     captcha = hCaptchaField()
 
@@ -29,11 +29,11 @@ class RegisterForm(UserCreationForm):
 
 
 class ChangePasswordForm(PasswordChangeForm):
-    old_password = forms.CharField(label="Twoje stare hasło",
+    old_password = forms.CharField(label="<p>Twoje stare hasło</p>",
                                    widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
-    new_password1 = forms.CharField(label="Nowe hasło",
+    new_password1 = forms.CharField(label="<p>Nowe hasło</p>",
                                     widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
-    new_password2 = forms.CharField(label="Potwierdź hasło",
+    new_password2 = forms.CharField(label="<p>Potwierdź hasło</p>",
                                     widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
 
 
@@ -43,11 +43,11 @@ class ResetPasswordEmailForm(PasswordResetForm):
 
 
 class ResetPasswordForm(SetPasswordForm):
-    new_password1 = forms.CharField(label="Nowe hasło",
+    new_password1 = forms.CharField(label="<p>Nowe hasło</p>",
                                     widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
-    new_password2 = forms.CharField(label="Potwierdź hasło",
+    new_password2 = forms.CharField(label="<p>Potwierdź hasło</p>",
                                     widget=forms.PasswordInput(attrs={"class": "form-control mb-2"}))
 
 
 class ChangeNicknameForm(forms.Form):
-    new_nickname = forms.CharField(label="Twój nowy nick, zmiana kosztuje 100 dogecoinów", min_length=2, max_length=100)
+    new_nickname = forms.CharField(label="<p>Twój nowy nick, zmiana kosztuje 100 dogecoinów</p>", min_length=2, max_length=100)

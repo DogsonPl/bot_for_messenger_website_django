@@ -1,0 +1,13 @@
+@media screen and (min-width: 768px){
+    .settings_block{
+        top: 25vh;
+        font-size: 4vw;
+    }
+}
+
+@media screen and (max-width: 767px){
+    .settings_block{
+        top: 0px;
+        font-size: 13vw;
+    }
+}

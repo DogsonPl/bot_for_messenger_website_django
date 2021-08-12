@@ -2,12 +2,21 @@
 {% load static %}
 
 {% block title %} Ustawienia {% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'login/css/account_settings.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col">
-        <p><a href="{% url 'change_password' %}">Zmień hasło</a></p>
-        <p><a href="{% url 'account:change_nickname' %}">Zmień nick</a></p>
+<div class="row text-center">
+    <div class="col-md-6 settings_block">
+        <p><a href="{% url 'change_password' %}" class="m-md-1 m-lg-5 p-lg-5">
+            Zmień hasło
+        </a></p>
+    </div>
+    <div class="col-md-6 settings_block">
+        <p><a href="{% url 'account:change_nickname' %}" class="m-md-1 m-lg-5 p-lg-5">
+            Zmień nick
+        </a></p>
     </div>
 </div>
 {% endblock %}
