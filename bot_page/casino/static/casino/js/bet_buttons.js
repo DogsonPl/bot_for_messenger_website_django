@@ -15,12 +15,17 @@ function divide(){
 }
 
 function max(){
-    let confirm = window.confirm("Czy chcesz zabetować wszystkimi dogami?")
-    if(confirm)
-    {
+    $("#max_bet_confiramtion_modal").modal("show")
+
+    $("#bet_confirm").on("click", function(){
         bet_coins.value = user_money.textContent
         update_multiplier_label()
-    }
+        $("#max_bet_confiramtion_modal").modal("hide")
+    })
+    $("#bet_cancel").on("click", function(){
+        confirm = false
+        $("#max_bet_confiramtion_modal").modal("hide")
+    })
 }
 
 percent_slider.oninput = function(){

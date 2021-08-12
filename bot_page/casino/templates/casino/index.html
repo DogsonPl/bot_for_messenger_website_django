@@ -223,6 +223,25 @@
     </div>
 </main>
 
+<!-- confirm bet with max dogecoins -->
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="max bet confirm" aria-hidden="true" id="max_bet_confiramtion_modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Czy na pewno chcesz zabetować wszystkimi dogami?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-lg pl-5 pr-5" id="bet_confirm">Tak</button>
+                <button type="button" class="btn btn-danger btn-lg pl-5 pr-5" id="bet_cancel">Nie</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end confirm modal bet with max dogecoins -->
+
+
+
 <script src="{% static 'casino/js/casino_ajax.js' %}"></script>
 <script src="{% static 'casino/js/update_last_bets_table.js' %}"></script>
 <script src="{% static 'casino/js/bet_buttons.js' %}"></script>
