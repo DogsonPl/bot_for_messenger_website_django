@@ -18,6 +18,9 @@ shared_memory = shared_memory.ShareableList([0, 0, 1e10])
 :var shared_memory[2] --> id of worker which is running scheduler tasks
 """
 
+access_logfile = "/root/bot_page/logs.log"
+log_level = "debug"
+
 
 def post_worker_init(worker):
     if not shared_memory[0]:
