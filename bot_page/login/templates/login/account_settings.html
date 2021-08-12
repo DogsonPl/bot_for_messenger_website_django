@@ -8,15 +8,15 @@
 
 {% block content %}
 <div class="row text-center">
-    <div class="col-md-6 settings_block">
-        <p><a href="{% url 'change_password' %}" class="m-md-1 m-lg-5 p-lg-5">
+    <div class="col-md-6 mt-5 mt-md-0">
+        <a href="{% url 'change_password' %}"><p class="btn btn-warning settings_block">
             Zmień hasło
-        </a></p>
+        </p></a>
     </div>
-    <div class="col-md-6 settings_block">
-        <p><a href="{% url 'account:change_nickname' %}" class="m-md-1 m-lg-5 p-lg-5">
+    <div class="col-md-6 mt-5 mt-md-0">
+        <a href="{% url 'account:change_nickname' %}"><p class="btn btn-warning settings_block">
             Zmień nick
-        </a></p>
+        </p></a>
     </div>
 </div>
 {% endblock %}

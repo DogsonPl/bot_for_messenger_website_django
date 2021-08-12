@@ -50,4 +50,6 @@ class ResetPasswordForm(SetPasswordForm):
 
 
 class ChangeNicknameForm(forms.Form):
-    new_nickname = forms.CharField(label="<p>Twój nowy nick, zmiana kosztuje 100 dogecoinów</p>", min_length=2, max_length=100)
+    new_nickname = forms.CharField(label="<p>Twój nowy nick, zmiana kosztuje 100 dogecoinów</p>",
+                                   widget=forms.TextInput(attrs={"class": "form-control mb-3"}),
+                                   min_length=2, max_length=100)
