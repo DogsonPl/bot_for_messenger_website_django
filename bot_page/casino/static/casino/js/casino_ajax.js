@@ -104,16 +104,16 @@ $("#jackpot").on("submit", function(event){
             }
             else if(status==0){
                 modal_message = "Kupiono " + response["tickets"] + " biletów"
+                let user_money_formatted = parseFloat(response["player_money"])
+                user_money.innerHTML = user_money_formatted
+                user_money_navbar.innerHTML = user_money_formatted
+                total_tickets.innerHTML = parseInt(response["tickets"]) + parseInt(total_tickets.textContent)
+                user_tickets.innerHTML = parseInt(response["tickets"]) + parseInt(user_tickets.textContent)
             }
             else if(status==2){
                 modal_message = "💤 Obecnie trwa losowanie, spróbuj za kilka sekund"
             }
             send_modal_message(modal_message)
-            let user_money_formatted = parseFloat(response["player_money"]).toFixed(2)
-            user_money.innerHTML = user_money_formatted
-            user_money_navbar.innerHTML = user_money_formatted
-            total_tickets.innerHTML = parseInt(response["tickets"]) + parseInt(total_tickets.textContent)
-            user_tickets.innerHTML = parseInt(response["tickets"]) + parseInt(user_tickets.textContent)
             jackpot_button.disabled = false
         },
         error: function(error){
