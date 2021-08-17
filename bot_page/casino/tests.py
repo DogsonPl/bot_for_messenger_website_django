@@ -199,3 +199,7 @@ class TestViews(TestCase):
     def test_jackpot_buy_link(self):
         response = self.client.get("/casino/jackpot_buy")
         self.assertEqual(response.json(), {"status": "forbidden"})
+
+    def test_scratch_card(self):
+        response = self.client.get("/casino/scratch_card")
+        self.assertEqual(response.json(), {"status": "forbidden"})

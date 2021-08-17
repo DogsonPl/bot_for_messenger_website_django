@@ -16,6 +16,8 @@ CasinoPlayers = apps.get_model("casino", "CasinoPlayers")
 
 
 def login_(request):
+    if request.user.is_authenticated:
+        return redirect("/")
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -33,6 +35,8 @@ def login_(request):
 
 
 def register_(request):
+    if request.user.is_authenticated:
+        return redirect("/")
     if request.method == "POST":
         form = RegisterForm(request.POST)
         user_mail = request.POST["email"]

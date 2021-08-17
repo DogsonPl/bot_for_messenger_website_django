@@ -174,10 +174,13 @@ def buy_scratch_card(request):
 @csrf_exempt
 @check_post_password
 def buy_scratch_card_fb(request):
-    try:
-        player = CasinoPlayers.objects.get(user_fb_id=request.POST["user_fb_id"])
-    except ObjectDoesNotExist:
-        message = FB_REGISTER_ACCOUNT_MESSAGE
+    if request.method == "POST":
+        try:
+            player = CasinoPlayers.objects.get(user_fb_id=request.POST["user_fb_id"])
+        except ObjectDoesNotExist:
+            message = FB_REGISTER_ACCOUNT_MESSAGE
+        else:
+            message = casino_actions.buy_scratch_card(player)
+        return JsonResponse({"message": message})
     else:
-        message = casino_actions.buy_scratch_card(player)
-    return JsonResponse({"message": message})
+        return JsonResponse({"status": "forbidden"})
