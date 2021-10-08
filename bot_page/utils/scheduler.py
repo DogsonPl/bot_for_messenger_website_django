@@ -2,16 +2,18 @@ from datetime import datetime, timedelta
 import pytz
 import random as rd
 import bisect
+from decimal import Decimal, getcontext
 
 from django.db import transaction
 from django.db.utils import ProgrammingError, OperationalError
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.conf import settings
 from django.apps import apps
 from django.core.cache import cache
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
+getcontext().prec = 20
 
 CasinoPlayers = apps.get_model("casino", "CasinoPlayers")
 MoneyHistory = apps.get_model("casino", "MoneyHistory")
@@ -105,8 +107,7 @@ def reset_daily():
 
     CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
     CasinoPlayers.objects.all().update(take_daily=False, today_lost_money=0, today_won_money=0,
-                                       today_scratch_profit=0, today_scratch_bought=0)
-
+                                       today_scratch_profit=0, today_scratch_bought=0, money=F("money")*Decimal(0.99))
     cache.set("performing_daily_reset", False, None)
 
 
