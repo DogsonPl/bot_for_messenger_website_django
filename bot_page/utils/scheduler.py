@@ -104,10 +104,23 @@ def draw_jackpot_winner():
 
 def reset_daily():
     cache.set("performing_daily_reset", True, None)
+    now = datetime.now(tz=pytz.timezone(settings.TIME_ZONE))
 
     CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
-    CasinoPlayers.objects.all().update(take_daily=False, today_lost_money=0, today_won_money=0,
-                                       today_scratch_profit=0, today_scratch_bought=0, money=F("money")*Decimal(0.99))
+    if now.day == 1:
+        for i in CasinoPlayers.objects.all():
+            i.take_daily = False
+            i.today_lost_money = 0
+            i.today_won_money = 0
+            i.today_scratch_profit = 0
+            i.today_scratch_bought = 0
+            if i.money > 100:
+                i.legendary_dogecoins += (i.money - 100)
+                i.money = 100
+            i.save()
+    else:
+        CasinoPlayers.objects.all().update(take_daily=False, today_lost_money=0, today_won_money=0,
+                                           today_scratch_profit=0, today_scratch_bought=0, money=F("money")*Decimal(0.99))
     cache.set("performing_daily_reset", False, None)
 
 

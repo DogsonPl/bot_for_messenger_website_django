@@ -24,7 +24,8 @@
                     </header>
                 </div>
                 <div class="card-body pt-0">
-                    <p>Posiadasz <span id="user_money">{{player.money | format_money}}</span> monet</p>
+                    <p>Posiadasz <span id="user_money">{{player.money | format_money}}</span> dogecoinów</p>
+                    <p>Posiadasz {{player.legendary_dogecoins | format_money}} legandarnych dogecoinów</p>
                     <p>Twój daily strike wynosi <span id="daily_strike">{{player.daily_strike}}</span></p>
                     {% if player.take_daily == 0 %}
                     <button class="btn btn-success" id="daily_button" type="button">Odbierz daily</button>

@@ -21,6 +21,7 @@ class CasinoPlayers(models.Model):
     today_scratch_profit = models.IntegerField(default=0)
     last_time_scratch = models.DateTimeField(blank=True, null=True)
     today_scratch_bought = models.PositiveSmallIntegerField(default=0)
+    legendary_dogecoins = models.FloatField(default=0)
 
     class Meta:
         verbose_name = "Player"
