@@ -115,7 +115,7 @@ def reset_daily():
             i.today_scratch_profit = 0
             i.today_scratch_bought = 0
             if i.money > 100:
-                i.legendary_dogecoins += (i.money - 100)
+                i.legendary_dogecoins += float(i.money - 100)
                 i.money = 100
             i.save()
     else:
