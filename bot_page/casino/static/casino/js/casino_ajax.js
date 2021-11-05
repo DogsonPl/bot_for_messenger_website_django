@@ -57,25 +57,25 @@ $("#bet").on("submit", function(event){
             let status = response["status"]
             bet_info_div.classList.remove("alert-success")
             bet_info_div.classList.remove("alert-danger")
-            if(status===0){
-                let result = (response["win"]===1) ? "Wygrana" : "Przegrana"
+            if(status==0){
+                let result = (response["win"]==1) ? "Wygrana" : "Przegrana"
                 update_user_last_bets([response["date"], response["amount"], response["user_number"], response["drown_number"], result, parseFloat(response["money"]).toFixed(3)],
                                        response["win"])
-                if(response["win"]===1){
+                if(response["win"]==1){
                     bet_info_div.classList.add("alert-success")
                 }
                 else{
                     bet_info_div.classList.add("alert-danger")
                 }
+                let user_money_formatted = parseFloat(response["player_money"]).toFixed(2)
+                user_money.innerHTML = user_money_formatted
+                user_money_navbar.innerHTML = user_money_formatted
             }
             else{
                 send_modal_message("Podano nieprawidłowe dane")
             }
             bet_info_div.hidden = false
             bet_info.innerHTML = response["message"]
-            let user_money_formatted = parseFloat(response["player_money"]).toFixed(2)
-            user_money.innerHTML = user_money_formatted
-            user_money_navbar.innerHTML = user_money_formatted
             bet_button.disabled = false
         },
         error: function(error){
@@ -133,14 +133,16 @@ $("#scratch_button").on("click", function(event){
         url: 'buy_scratch_card',
         data: data,
         success: function(response){
-            player_money = response["player_money"]
-            user_money.innerHTML = player_money
-            user_money_navbar.innerHTML = player_money
             send_modal_message(response["message"])
-            scratch_button.disabled = true
-            scratch_timeout = "19:59"
-            scratch_timeout_p.innerHTML = "Możesz odebrać zdrapke za " + scratch_timeout + " minut"
-            var scratch_timer = setInterval(update_scratch_timeout, 1000, [scratch_timeout])
+            if(response["message"]!="🚫 Nie masz wystarczająco dogecoinów by kupić zdrapke, koszt zdrapki to 5 dogecoinów"){
+                player_money = response["player_money"]
+                user_money.innerHTML = player_money
+                user_money_navbar.innerHTML = player_money
+                scratch_button.disabled = true
+                scratch_timeout = "19:59"
+                scratch_timeout_p.innerHTML = "Możesz odebrać zdrapke za " + scratch_timeout + " minut"
+                var scratch_timer = setInterval(update_scratch_timeout, 1000, [scratch_timeout])
+            }
         },
         error: function(error){
             send_modal_message("Ups, nastąpił błąd po stronie serwera. Spróbuj ponownie później")
