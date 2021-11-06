@@ -225,6 +225,56 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Gracze z największą ilością legendarnych dogów</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table tablesorter">
+                        <thead class=" text-primary">
+                        <tr>
+                            <th scope="col">
+                                Nick
+                            </th>
+                            <th scope="col">
+                                Legendarne DC
+                            </th>
+                            <th scope="col">
+                                Wygrane bety
+                            </th>
+                            <th class="text-center" scope="col">
+                                Przegrane bety
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for player in players_legendary %}
+                        <tr>
+                            <td>
+                                {{ player }}
+                            </td>
+                            <td>
+                                {{ player.legendary_dogecoins | floatformat:2}}
+                            </td>
+                            <td>
+                                {{ player.won_bets |  intcomma }}
+                            </td>
+                            <td class="text-center">
+                                {{ player.lost_bets |  intcomma }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     var last_jackpots_wins = {{ last_jackpots_wins | safe }}
     var users_total_money_history = {{ users_total_money_history | safe }}

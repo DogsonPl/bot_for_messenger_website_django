@@ -32,6 +32,7 @@ def index(request):
         user_money_daily_statistic_data = []
 
     players = CasinoPlayers.objects.all().order_by("-money")[:10]
+    players_legendary = CasinoPlayers.objects.all().order_by("-legendary_dogecoins")[:10]
 
     last_jackpots_wins = JackpotsResults.objects.all()
     last_jackpots_wins = serialize_to_json(last_jackpots_wins, 5)
@@ -60,4 +61,5 @@ def index(request):
                                                    "biggest_bet_winner": biggest_bet_winner,
                                                    "biggest_jackpot_win": biggest_jackpot_win,
                                                    "last_jackpot_winner": last_jackpot_winner,
-                                                   "last_jackpot_win_prize": last_jackpot_win_prize})
+                                                   "last_jackpot_win_prize": last_jackpot_win_prize,
+                                                   "players_legendary": players_legendary})
