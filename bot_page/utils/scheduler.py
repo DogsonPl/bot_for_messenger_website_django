@@ -108,19 +108,30 @@ def reset_daily():
 
     CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
     if now.day == 1:
+        try:
+            first_player, second_player, third_player = CasinoPlayers.objects.all().order_by('-money')[:3]
+            first_player.season_first_place += 1
+            first_player.save()
+            second_player.season_second_place += 1
+            second_player.save()
+            third_player.season_third_place += 1
+            third_player.save()
+        except ValueError:
+            # there are not enough players
+            pass
         for i in CasinoPlayers.objects.all():
             i.take_daily = False
-            i.today_lost_money = 0
-            i.today_won_money = 0
-            i.today_scratch_profit = 0
             i.today_scratch_bought = 0
+            i.last_season_dogecoins = i.money
+            if i.money > i.best_season:
+                i.best_season = i.money
             if i.money > 100:
                 i.legendary_dogecoins += float(i.money - 100)
                 i.money = 100
             i.save()
     else:
-        CasinoPlayers.objects.all().update(take_daily=False, today_lost_money=0, today_won_money=0,
-                                           today_scratch_profit=0, today_scratch_bought=0, money=F("money")*Decimal(0.99))
+        CasinoPlayers.objects.all().update(take_daily=False,
+                                           today_scratch_bought=0, money=F("money")*Decimal(0.99))
     cache.set("performing_daily_reset", False, None)
 
 

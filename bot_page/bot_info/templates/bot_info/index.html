@@ -62,12 +62,11 @@
             <div class="card-body">
                 {% if user.is_authenticated %}
                     <h3 class="m-0">Betowanie</h3>
-                    <p class="mt-2">Wygrałeś/aś dzisiaj: {{ player.today_won_money | floatformat:2}} dogecoinów</p>
-                    <p>Przegrałeś/aś dzisiaj: {{ player.today_lost_money | floatformat:2 }} dogecoinów</p>
-                    <p>Dzisiejszy profit na betowaniu:  {{ player.today_won_money | add:player.today_lost_money }} dogecoinów</p>
+                    <p class="mt-2">Twoja największa wygrana w becie: {{ player.biggest_win | floatformat:2}} dogecoinów</p>
+                    <p>soon</p>
                     <h3 class="m-0 mt-3">Zdrapki</h3>
                     <p class="mt-2">Kupiłeś/aś dzisiaj: {{ player.today_scratch_bought }} zdrapek</p>
-                    <p>Dzisiaj zdrapki dały ci: {{ player.today_scratch_profit }} dogecoinów</p>
+                    <p>Kupiłeś łącznie {{ player.total_scratch_bought  }}, dzisiaj {{ today_scratch_bought}} zdrapek</p>
                 {% else %}
                     <h3><a href="{% url 'account:login' %}">Zaloguj się</a> żeby zobaczyć swoje statystyki</h3>
                 {% endif %}
