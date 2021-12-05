@@ -66,6 +66,10 @@ $("#bet").on("submit", function(event){
                 }
                 else{
                     bet_info_div.classList.add("alert-danger")
+                    if(response["player_money"] < user_money.textContent){
+                        bet_coins.value = 0
+                        update_multiplier_label()
+                    }
                 }
                 let user_money_formatted = parseFloat(response["player_money"]).toFixed(2)
                 user_money.innerHTML = user_money_formatted

@@ -10,7 +10,7 @@ function update_user_last_bets(bet_data, win)
     {
         if(i.children.length==1)
         {
-            let span_class = (win===0) ? "'text-danger'>" : "'text-success'>"
+            let span_class = (win==0) ? "'text-danger'>" : "'text-success'>"
             i.innerHTML = "<span class=" + span_class + bet_data[j] + " </span>"
         }
         else

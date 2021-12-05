@@ -5,8 +5,14 @@ const multiplier_label = document.getElementById("multiplier_label")
 const bet_form = document.getElementById("bet")
 
 function multiply(){
-    bet_coins.value *= 2
-    update_multiplier_label()
+    let new_bet_coins_value = bet_coins.value*2
+    if(new_bet_coins_value > user_money.textContent){
+        max()
+    }
+    else{
+        bet_coins.value = new_bet_coins_value
+        update_multiplier_label()
+    }
 }
 
 function divide(){
