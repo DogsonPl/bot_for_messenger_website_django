@@ -22,11 +22,15 @@ class NotLoggedUser:
 def index(request):
     if request.user.is_authenticated:
         user_player = CasinoPlayers.objects.get(user=request.user)
+        total_bets = user_player.won_bets+user_player.lost_bets
+        won_bets_percent = str((user_player.won_bets / total_bets) * 100)[0:5]
         user_money_statistic_data = MoneyHistory.objects.filter(player=user_player)
         user_money_statistic_data = serialize_to_json(user_money_statistic_data)
         user_money_daily_statistic_data = TwentyFourHoursMoneyHistory.objects.filter(player=user_player)
         user_money_daily_statistic_data = serialize_to_json(user_money_daily_statistic_data)
     else:
+        total_bets = 0
+        won_bets_percent = 0
         user_player = NotLoggedUser
         user_money_statistic_data = []
         user_money_daily_statistic_data = []
@@ -62,4 +66,6 @@ def index(request):
                                                    "biggest_jackpot_win": biggest_jackpot_win,
                                                    "last_jackpot_winner": last_jackpot_winner,
                                                    "last_jackpot_win_prize": last_jackpot_win_prize,
-                                                   "players_legendary": players_legendary})
+                                                   "players_legendary": players_legendary,
+                                                   "total_bets": total_bets,
+                                                   "won_bets_percent": won_bets_percent})

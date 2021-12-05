@@ -57,16 +57,19 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">Twoje dzisiejsze statystyki</h2>
+                <h2 class="card-title">Twoje statystyki</h2>
             </div>
             <div class="card-body">
                 {% if user.is_authenticated %}
                     <h3 class="m-0">Betowanie</h3>
-                    <p class="mt-2">Twoja największa wygrana w becie: {{ player.biggest_win | floatformat:2}} dogecoinów</p>
-                    <p>soon</p>
+                    <p class="mt-2">Legendarne dogi: {{ player.legendary_dogecoins | floatformat:2}}</p>
+                    <p>Twoja największa wygrana w becie: {{ player.biggest_win | floatformat:2}} dogecoinów</p>
+                    <p>Twój najlepszy sezon: {{ player.best_season | floatformat:2}}</p>
+                    <p>W poprzednim sezonie miałeś {{ player.last_season_dogecoins | floatformat:2}} dogecoinów</p>
+                    <p>Wykonałeś łącznie {{ total_bets }} betów, w tym {{ won_bets }} wygranych ({{ won_bets_percent }}%)</p>
                     <h3 class="m-0 mt-3">Zdrapki</h3>
                     <p class="mt-2">Kupiłeś/aś dzisiaj: {{ player.today_scratch_bought }} zdrapek</p>
-                    <p>Kupiłeś łącznie {{ player.total_scratch_bought  }}, dzisiaj {{ today_scratch_bought}} zdrapek</p>
+                    <p>Kupiłeś łącznie {{ player.total_scratch_bought  }} zdrapek</p>
                 {% else %}
                     <h3><a href="{% url 'account:login' %}">Zaloguj się</a> żeby zobaczyć swoje statystyki</h3>
                 {% endif %}
