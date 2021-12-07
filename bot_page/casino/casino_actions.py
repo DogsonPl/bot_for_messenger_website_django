@@ -4,10 +4,13 @@ import bisect
 import struct
 from datetime import datetime, timedelta
 import pytz
+import json
+from asgiref.sync import async_to_sync
 
 from django.db import transaction
 from django.core.cache import cache
 from django.conf import settings
+import channels.layers
 
 from utils import statistic_data
 from .models import Jackpot, CasinoPlayers
@@ -87,6 +90,7 @@ Wylosowana liczba: {lucky_number}"""
         if cache.get("max_bet_win") < won_money:
             update_the_biggest_win(player, won_money, percent_to_win, wage)
 
+    send_bet_signal(str(player), wage, percent_to_win, lucky_number, result, float(won_money))
     player.save()
     return result, message, won_money, lucky_number
 
@@ -159,3 +163,13 @@ def get_random_number() -> float:
     random = struct.unpack("H", random_bytes)[0] % 1000   # "H" --> unsigned short
     random /= 10
     return random
+
+
+def send_bet_signal(player_name, wage, lucky_number, drawn_number, result, won_money):
+    bet_info = [player_name, "%.5f" % wage, lucky_number, drawn_number, result, "%.3f" % won_money]
+    channel_layer = channels.layers.get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "players", {
+            "type": 'new_bet',
+            "content": json.dumps({"bet_info": bet_info, "win": result})
+        })

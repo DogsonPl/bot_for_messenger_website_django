@@ -66,7 +66,7 @@ $("#bet").on("submit", function(event){
                 }
                 else{
                     bet_info_div.classList.add("alert-danger")
-                    if(response["player_money"] < user_money.textContent){
+                    if(response["player_money"] < bet_coins.value){
                         bet_coins.value = 0
                         update_multiplier_label()
                     }

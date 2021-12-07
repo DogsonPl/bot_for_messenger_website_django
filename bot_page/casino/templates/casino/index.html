@@ -10,6 +10,7 @@
 
 {% block scripts %}
 <script src="{% static 'casino/js/plugins/bootstrap-notify.js' %}"></script>
+<script src="{% static 'casino/js/channel.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -46,8 +47,6 @@
             </div>
         </div>
     </div>
-
-
 
     <div class="row">
         <div class="col-sm-7 col-md-6">
@@ -188,7 +187,7 @@
                                 </th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="bets_table">
                             {% for bet in last_bets %}
                             <tr>
                                 <td>
@@ -240,8 +239,6 @@
     </div>
 </div>
 <!-- end confirm modal bet with max dogecoins -->
-
-
 
 <script src="{% static 'casino/js/casino_ajax.js' %}"></script>
 <script src="{% static 'casino/js/update_last_bets_table.js' %}"></script>

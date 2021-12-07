@@ -39,12 +39,25 @@ if not DEBUG:
             'LOCATION': '127.0.0.1:11211',
         }
     }
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [("127.0.0.1", 6379)],
+            },
+        },
+    }
 else:
     ALLOWED_HOSTS = ["*"]
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
             'LOCATION': 'unique-snowflake',
+        }
+    }
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
         }
     }
 
@@ -64,6 +77,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'hcaptcha',
     'django_apscheduler',
+    'channels',
 
     'home',
     'casino',
@@ -199,3 +213,5 @@ HCAPTCHA_SITEKEY = config_parser.get("hcaptcha", "hcaptcha_sitekey")
 HCAPTCHA_SECRET = config_parser.get("hcaptcha", "hcaptcha_secret")
 
 AUTH_USER_MODEL = 'login.User'
+
+ASGI_APPLICATION = "bot_page.asgi.application"

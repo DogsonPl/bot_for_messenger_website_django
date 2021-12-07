@@ -1,0 +1,13 @@
+[Unit]
+Description=WebSocket Daphne Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/bot_page/
+ExecStart=/root/django_env/bin/python /root/django_env/bin/daphne -b 0.0.0.0 -p 8001 bot_page.asgi:application
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

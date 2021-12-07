@@ -104,7 +104,7 @@ def make_bet(request):
                                              amount=wage, win=result, money=won_money)
 
             return JsonResponse({"status": status, "message": message, "player_money": format_money(player.money),
-                                 "date": "Now", "amount": wage, "user_number": percent_to_win,
+                                 "date": "Now", "amount": "%.5f" % wage, "user_number": percent_to_win,
                                  "drown_number": lucky_number, "win": result, "money": bet.money})
     else:
         return JsonResponse({"status": "forbidden"})

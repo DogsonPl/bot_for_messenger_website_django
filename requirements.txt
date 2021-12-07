@@ -7,3 +7,4 @@ django-hcaptcha
 gunicorn
 mysql
 mysqlclient
+channels
