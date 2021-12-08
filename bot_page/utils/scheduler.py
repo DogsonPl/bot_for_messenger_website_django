@@ -146,8 +146,8 @@ def set_last_jackpot_info():
         else:
             last_jackpot_winner = last_jackpot.winner
             last_jackpot_win_prize = last_jackpot.prize
-        cache.set("last_jackpot_winner", last_jackpot_winner)
-        cache.set("last_jackpot_win_prize", last_jackpot_win_prize)
+        cache.set("last_jackpot_winner", last_jackpot_winner, None)
+        cache.set("last_jackpot_win_prize", last_jackpot_win_prize, None)
     except OperationalError:
         print("Database is probably during migrations")
 
