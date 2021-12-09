@@ -74,6 +74,7 @@ def make_bet(player, percent_to_win: int, wage: float):
         result = 0
         won_money = Decimal(wage*-1)
         player.money += won_money
+        player.lost_dc += won_money
         message = f"""<strong>📉 Przegrano {'%.2f' % wage} dogecoinów</strong>.  
 Masz ich obecnie {format_money(player.money)} 
 Wylosowana liczba: {lucky_number}"""
@@ -82,6 +83,7 @@ Wylosowana liczba: {lucky_number}"""
         result = 1
         won_money = Decimal(((wage / (percent_to_win / 100)) - wage) * 0.99)
         player.money += won_money
+        player.won_dc += won_money
         message = f"""<strong>📈 Wygrano {'%.2f' % won_money} dogecoinów</strong>.  
 Masz ich obecnie {format_money(player.money)} 
 Wylosowana liczba: {lucky_number}"""

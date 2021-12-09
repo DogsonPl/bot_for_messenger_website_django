@@ -64,6 +64,8 @@
                     <h3 class="m-0">Betowanie</h3>
                     <p class="mt-2">Legendarne dogi: {{ player.legendary_dogecoins | floatformat:2}}</p>
                     <p>Twoja największa wygrana w becie: {{ player.biggest_win | floatformat:2}} dogecoinów</p>
+                    <p>Wygrałeś łącznie {{ player.won_dc | floatformat:2}} dogecoinów</p>
+                    <p>Przegrałeś łącznie {{ player.lost_dc | floatformat:2}} dogecoinów</p>
                     <p>Twój najlepszy sezon: {{ player.best_season | floatformat:2}}</p>
                     <p>W poprzednim sezonie miałeś {{ player.last_season_dogecoins | floatformat:2}} dogecoinów</p>
                     <p>Wykonałeś łącznie {{ total_bets }} betów, w tym {{ won_bets }} wygranych ({{ won_bets_percent }}%)</p>

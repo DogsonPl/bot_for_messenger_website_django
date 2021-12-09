@@ -25,6 +25,8 @@ class CasinoPlayers(models.Model):
     season_first_place = models.PositiveSmallIntegerField(default=0)
     season_second_place = models.PositiveSmallIntegerField(default=0)
     season_third_place = models.PositiveSmallIntegerField(default=0)
+    won_dc = models.DecimalField(default=0, decimal_places=10, max_digits=30)
+    lost_dc = models.DecimalField(default=0, decimal_places=10, max_digits=30)
 
     class Meta:
         verbose_name = "Player"
