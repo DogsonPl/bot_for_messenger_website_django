@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.db.models import Sum, ObjectDoesNotExist
+from django.db.utils import IntegrityError
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -184,3 +185,14 @@ def buy_scratch_card_fb(request):
         return JsonResponse({"message": message})
     else:
         return JsonResponse({"status": "forbidden"})
+
+
+@csrf_exempt
+@check_post_password
+def create_account_fb(request):
+    try:
+        CasinoPlayers.objects.create(user_fb_id=request.POST["user_fb_id"], fb_name=request.POST["fb_name"])
+        message = "✅ Pomyślnie się zarejestrowano. Jest możliwa integracja ze stroną www (https://dogson.ovh). Po więcej informacji napisz !strona"
+    except IntegrityError:
+        message = "🚫 Masz już założone konto"
+    return JsonResponse({"message": message})
