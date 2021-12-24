@@ -4,9 +4,9 @@ import random as rd
 import bisect
 from decimal import Decimal, getcontext
 
-from django.db import transaction
+from django.db import transaction, ProgrammingError
 from django.db.utils import ProgrammingError, OperationalError
-from django.db.models import Sum, F
+from django.db.models import Sum, F, ObjectDoesNotExist
 from django.conf import settings
 from django.apps import apps
 from django.core.cache import cache
@@ -21,6 +21,16 @@ TwentyFourHoursMoneyHistory = apps.get_model("casino", "TwentyFourHoursMoneyHist
 UsersTotalMoneyHistory = apps.get_model("casino", "UsersTotalMoneyHistory")
 Jackpot = apps.get_model("casino", "Jackpot")
 JackpotsResults = apps.get_model("casino", "JackpotsResults")
+Achievements = apps.get_model("casino", "Achievements")
+AchievementsPlayerLinkTable = apps.get_model("casino", "AchievementsPlayerLinkTable")
+
+# achievements
+try:
+    WIN_JACKPOT_ACHIEVEMENT = Achievements.objects.get(id=Achievements.win_jackpot_achievement_id)
+    BOUGHT_SCRATCHES_IN_ONE_DAY = Achievements.objects.get(id=Achievements.bought_scratches_in_one_day_id)
+    DAILY_STRIKE_ACHIEVEMENT = Achievements.objects.get(id=Achievements.daily_strike_achievement_id)
+except (ObjectDoesNotExist, ProgrammingError):
+    print("Cannot find all achievements on scheduler.py")
 
 
 def init():
@@ -96,9 +106,11 @@ def draw_jackpot_winner():
         JackpotsResults.objects.create(winner=winner, prize=total)
         winner.money += total
         winner.save()
+
         Jackpot.objects.all().delete()
         set_last_jackpot_info()
-
+        link_table = Achievements.objects.get(achievement=WIN_JACKPOT_ACHIEVEMENT, player=winner)
+        Achievements.check_achievement_add(WIN_JACKPOT_ACHIEVEMENT, link_table)
         cache.set("performing_jackpot_draw", False, None)
 
 
@@ -107,6 +119,11 @@ def reset_daily():
     now = datetime.now(tz=pytz.timezone(settings.TIME_ZONE))
 
     CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
+    AchievementsPlayerLinkTable.objects.filter(achievement=BOUGHT_SCRATCHES_IN_ONE_DAY).update(player_score=0)
+    for i in AchievementsPlayerLinkTable.objects.filter(achievement=DAILY_STRIKE_ACHIEVEMENT):
+        if not i.player.take_daily:
+            i.player_score = 0
+            i.save()
     if now.day == 1:
         try:
             first_player, second_player, third_player = CasinoPlayers.objects.all().order_by('-money')[:3]

@@ -1,7 +1,7 @@
 from django.contrib import admin
 # Register your models here.
 from .models import CasinoPlayers, Jackpot, JackpotsResults, BetsHistory, MoneyHistory, UsersTotalMoneyHistory, \
-                    TwentyFourHoursMoneyHistory
+                    TwentyFourHoursMoneyHistory, AchievementsPlayerLinkTable, Achievements
 
 
 @admin.register(CasinoPlayers)
@@ -45,3 +45,13 @@ class UsersTotalMoneyHistoryAdmin(admin.ModelAdmin):
 class TwentyFourHoursMoneyHistory(admin.ModelAdmin):
     list_display = ("__str__", "money")
     search_fields = ("player__user__username__startswith",)
+
+
+@admin.register(AchievementsPlayerLinkTable)
+class AchievementsPlayerLinkTable(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Achievements)
+class Achievement(admin.ModelAdmin):
+    pass

@@ -7,16 +7,33 @@ import pytz
 import json
 from asgiref.sync import async_to_sync
 
-from django.db import transaction
+from django.db import transaction, ProgrammingError
+from django.db.models import ObjectDoesNotExist
 from django.core.cache import cache
 from django.conf import settings
 import channels.layers
 
 from utils import statistic_data
-from .models import Jackpot, CasinoPlayers
+from .models import Jackpot, CasinoPlayers, AchievementsPlayerLinkTable, Achievements
 from .utils import format_money, count_scratch_card_timeout
+from .achievements import AchievementsCheck, ACHIEVEMENTS
 
 getcontext().prec = 20
+achievement_check = AchievementsCheck()
+Achievements.create_achievements(ACHIEVEMENTS)
+
+try:
+    WIN_DOGECOINS_ACHIEVEMENT = Achievements.objects.get(id=Achievements.win_dogecoins_in_one_bet_achievement_id)
+    WIN_DOGECOINS_IN_A_ROW_ACHIEVEMENT = Achievements.objects.get(id=Achievements.win_dogecoins_in_a_row_id)
+    DONE_BETS_ACHIEVEMENT = Achievements.objects.get(id=Achievements.done_bets_achievement_id)
+    BOUGHT_SCRATCHES_IN_ONE_DAY = Achievements.objects.get(id=Achievements.bought_scratches_in_one_day_id)
+    WIN_2500_SCRATCH_ACHIEVEMENT = Achievements.objects.get(id=Achievements.win_2500_scratch_achievement_id)
+    BOUGHT_SCRATCHES = Achievements.objects.get(id=Achievements.bought_scratches_id)
+    DAILY_STRIKE_ACHIEVEMENT = Achievements.objects.get(id=Achievements.daily_strike_achievement_id)
+    DAILY_STRIKE_TOTAL = Achievements.objects.get(id=Achievements.daily_total_id)
+except (ObjectDoesNotExist, ProgrammingError):
+    print("Cannot find all achievements on casino/casino_actions.py")
+
 
 
 # key - prize
@@ -57,6 +74,12 @@ def set_daily(player) -> str:
         player.save()
         message = extra_message + f"""✅ Otrzymano właśnie darmowe {'%.2f' % received} dogecoinów.
 Jest to twoje {player.daily_strike} daily z rzędu"""
+
+        link_table = AchievementsPlayerLinkTable(player=player, achievement=DAILY_STRIKE_ACHIEVEMENT)
+        achievement_check.check_achievement_add(DAILY_STRIKE_ACHIEVEMENT, link_table)
+        link_table = AchievementsPlayerLinkTable(player=player, achievement=DAILY_STRIKE_TOTAL)
+        achievement_check.check_achievement_add(DAILY_STRIKE_TOTAL, link_table)
+
     else:
         message = f"""Odebrano już dzisiaj daily, nie próbuj oszukać systemu 😉. 
 Twój daily strike to {player.daily_strike}"""
@@ -78,6 +101,11 @@ def make_bet(player, percent_to_win: int, wage: float):
         message = f"""<strong>📉 Przegrano {'%.2f' % wage} dogecoinów</strong>.  
 Masz ich obecnie {format_money(player.money)} 
 Wylosowana liczba: {lucky_number}"""
+
+        link_table = AchievementsPlayerLinkTable.objects.get(achievement=WIN_DOGECOINS_IN_A_ROW_ACHIEVEMENT, player=player)
+        if wage != 0:
+            achievement_check.check_achievement_set(WIN_DOGECOINS_IN_A_ROW_ACHIEVEMENT, link_table, 0)
+
     else:
         player.won_bets += 1
         result = 1
@@ -89,11 +117,22 @@ Masz ich obecnie {format_money(player.money)}
 Wylosowana liczba: {lucky_number}"""
         if player.biggest_win < won_money:
             player.biggest_win = won_money
+            link_table = AchievementsPlayerLinkTable.objects.get(achievement=WIN_DOGECOINS_ACHIEVEMENT, player=player)
+            achievement_check.check_achievement_set(WIN_DOGECOINS_ACHIEVEMENT, link_table, won_money)
+
+        link_table = AchievementsPlayerLinkTable.objects.get(achievement=WIN_DOGECOINS_IN_A_ROW_ACHIEVEMENT, player=player)
+        if wage == 0:
+            achievement_check.check_achievement_set(WIN_DOGECOINS_IN_A_ROW_ACHIEVEMENT, link_table, 0)
+        else:
+            achievement_check.check_achievement_add(WIN_DOGECOINS_IN_A_ROW_ACHIEVEMENT, link_table)
         if cache.get("max_bet_win") < won_money:
             update_the_biggest_win(player, won_money, percent_to_win, wage)
 
-    send_bet_signal(str(player), wage, percent_to_win, lucky_number, result, float(won_money))
+    link_table = AchievementsPlayerLinkTable.objects.get(player=player, achievement=DONE_BETS_ACHIEVEMENT)
+    achievement_check.check_achievement_add(DONE_BETS_ACHIEVEMENT, link_table)
     player.save()
+
+    send_bet_signal(str(player), wage, percent_to_win, lucky_number, result, float(won_money))
     return result, message, won_money, lucky_number
 
 
@@ -146,6 +185,14 @@ Kolejną możesz odebrać za {timeout} minut"""
     player.last_time_scratch = datetime.now(tz=pytz.timezone(settings.TIME_ZONE))
     player.today_scratch_bought += 1
     player.total_scratch_bought += 1
+
+    link_table = AchievementsPlayerLinkTable(player=player, achievement=BOUGHT_SCRATCHES_IN_ONE_DAY)
+    achievement_check.check_achievement_add(BOUGHT_SCRATCHES_IN_ONE_DAY, link_table)
+    link_table = AchievementsPlayerLinkTable(player=player, achievement=BOUGHT_SCRATCHES)
+    achievement_check.check_achievement_add(BOUGHT_SCRATCHES, link_table)
+    if scratch_prize == 2500:
+        link_table = AchievementsPlayerLinkTable(player=player, achievement=WIN_2500_SCRATCH_ACHIEVEMENT)
+        achievement_check.check_achievement_add(WIN_2500_SCRATCH_ACHIEVEMENT, link_table)
     player.save()
 
     return f"""🔢 W zdrapce wygrałeś/aś {scratch_prize} dogów, profit to {profit} dogów

@@ -1,5 +1,8 @@
 from django.db import models
+from django.db.utils import IntegrityError
 from django.conf import settings
+
+from .achievements import AchievementsCheck
 
 
 class CasinoPlayers(models.Model):
@@ -36,8 +39,10 @@ class CasinoPlayers(models.Model):
     def __str__(self):
         if self.user:
             return str(self.user)
-        else:
+        elif self.fb_name:
             return self.fb_name
+        else:
+            return "Deleted"
 
 
 class Jackpot(models.Model):
@@ -126,3 +131,49 @@ class UsersTotalMoneyHistory(models.Model):
 
     def __str__(self):
         return f"Dane z {self.date}"
+
+
+class Achievements(models.Model, AchievementsCheck):
+    required_score_1 = models.FloatField(default=1, null=False, blank=False)
+    required_score_2 = models.FloatField(default=None, null=True, blank=False)
+    required_score_3 = models.FloatField(default=None, null=True, blank=False)
+    name = models.CharField(max_length=75, null=False, blank=False, unique=True)
+    description = models.CharField(default="Soon", max_length=500, null=False)
+
+    class Meta:
+        verbose_name = "Achievement"
+        verbose_name_plural = "Achievements"
+        db_table = "achievements"
+
+    @staticmethod
+    def create_achievements(achievements):
+        try:
+            for i in achievements:
+                achievement, created = Achievements.objects.update_or_create(name=i["name"])
+                achievement.description = i["description"]
+                achievement.required_score_1 = i["required_score_1"]
+                achievement.required_score_2 = i["required_score_2"]
+                achievement.required_score_3 = i["required_score_3"]
+                achievement.save()
+        except IntegrityError:
+            print("Probably migrations are running, achievements haven't been updated")
+
+    def __str__(self):
+        return self.name
+
+
+class AchievementsPlayerLinkTable(models.Model):
+    player = models.ForeignKey(CasinoPlayers, models.CASCADE, related_name="player_achievements",
+                               null=False, blank=False)
+    achievement = models.ForeignKey(Achievements, models.CASCADE, related_name="achievements",
+                                    null=False, blank=False)
+    player_score = models.FloatField(default=0, null=False, blank=False)
+    achievement_level = models.SmallIntegerField(default=0, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "achievement_link"
+        verbose_name_plural = "achievements_links"
+        db_table = "achievements_players_link_table"
+
+    def __str__(self):
+        return f"{self.player} - {self.achievement}"
