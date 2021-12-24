@@ -109,8 +109,8 @@ def draw_jackpot_winner():
 
         Jackpot.objects.all().delete()
         set_last_jackpot_info()
-        link_table = Achievements.objects.get(achievement=WIN_JACKPOT_ACHIEVEMENT, player=winner)
-        Achievements.check_achievement_add(WIN_JACKPOT_ACHIEVEMENT, link_table)
+        link_table = AchievementsPlayerLinkTable.objects.get(achievement=WIN_JACKPOT_ACHIEVEMENT, player=winner)
+        Achievements().check_achievement_add(WIN_JACKPOT_ACHIEVEMENT, link_table)
         cache.set("performing_jackpot_draw", False, None)
 
 
