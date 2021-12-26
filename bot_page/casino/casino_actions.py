@@ -75,9 +75,9 @@ def set_daily(player) -> str:
         message = extra_message + f"""✅ Otrzymano właśnie darmowe {'%.2f' % received} dogecoinów.
 Jest to twoje {player.daily_strike} daily z rzędu"""
 
-        link_table = AchievementsPlayerLinkTable(player=player, achievement=DAILY_STRIKE_ACHIEVEMENT)
+        link_table = AchievementsPlayerLinkTable.objects.get(player=player, achievement=DAILY_STRIKE_ACHIEVEMENT)
         achievement_check.check_achievement_add(DAILY_STRIKE_ACHIEVEMENT, link_table)
-        link_table = AchievementsPlayerLinkTable(player=player, achievement=DAILY_STRIKE_TOTAL)
+        link_table = AchievementsPlayerLinkTable.objects.get(player=player, achievement=DAILY_STRIKE_TOTAL)
         achievement_check.check_achievement_add(DAILY_STRIKE_TOTAL, link_table)
 
     else:
@@ -186,12 +186,12 @@ Kolejną możesz odebrać za {timeout} minut"""
     player.today_scratch_bought += 1
     player.total_scratch_bought += 1
 
-    link_table = AchievementsPlayerLinkTable(player=player, achievement=BOUGHT_SCRATCHES_IN_ONE_DAY)
+    link_table = AchievementsPlayerLinkTable.objects.get(player=player, achievement=BOUGHT_SCRATCHES_IN_ONE_DAY)
     achievement_check.check_achievement_add(BOUGHT_SCRATCHES_IN_ONE_DAY, link_table)
-    link_table = AchievementsPlayerLinkTable(player=player, achievement=BOUGHT_SCRATCHES)
+    link_table = AchievementsPlayerLinkTable.objects.get(player=player, achievement=BOUGHT_SCRATCHES)
     achievement_check.check_achievement_add(BOUGHT_SCRATCHES, link_table)
     if scratch_prize == 2500:
-        link_table = AchievementsPlayerLinkTable(player=player, achievement=WIN_2500_SCRATCH_ACHIEVEMENT)
+        link_table = AchievementsPlayerLinkTable.objects.get(player=player, achievement=WIN_2500_SCRATCH_ACHIEVEMENT)
         achievement_check.check_achievement_add(WIN_2500_SCRATCH_ACHIEVEMENT, link_table)
     player.save()
 

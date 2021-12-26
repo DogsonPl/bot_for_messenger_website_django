@@ -149,7 +149,8 @@ class Achievements(models.Model, AchievementsCheck):
     def create_achievements(achievements):
         try:
             for i in achievements:
-                achievement, created = Achievements.objects.update_or_create(name=i["name"])
+                achievement, created = Achievements.objects.update_or_create(id=i["id"])
+                achievement.name = i["name"]
                 achievement.description = i["description"]
                 achievement.required_score_1 = i["required_score_1"]
                 achievement.required_score_2 = i["required_score_2"]
