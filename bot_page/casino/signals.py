@@ -34,7 +34,7 @@ def on_bet(sender, instance, created, **kwargs):
         user_bets[0].delete()
 
 
-@receiver(post_save, sender=User, dispatch_uid="on_player_created_uid")
+@receiver(post_save, sender=CasinoPlayers, dispatch_uid="on_player_created_uid")
 def on_casino_player_created(sender, instance, created, **kwargs):
     if created:
         for i in Achievements.objects.all():
