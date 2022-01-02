@@ -13,6 +13,7 @@ from . import utils
 
 User = get_user_model()
 CasinoPlayers = apps.get_model("casino", "CasinoPlayers")
+AchievementsPlayerLinkTable = apps.get_model("casino", "AchievementsPlayerLinkTable")
 
 
 def login_(request):
@@ -84,7 +85,10 @@ def logout_(request):
 def user_settings(request):
     if request.user.is_authenticated:
         player = CasinoPlayers.objects.get(user=request.user)
-        return render(request, "login/account_settings.html", {"nav_bar": "account", "player": player})
+        player_achievements = AchievementsPlayerLinkTable.objects.filter(player=player)
+        return render(request, "login/account_settings.html", {"nav_bar": "account",
+                                                               "player": player,
+                                                               "player_achievements": player_achievements})
     else:
         return redirect("account/login")
 
