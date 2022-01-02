@@ -50,14 +50,10 @@ def on_new_achievement(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User, dispatch_uid="on_new_user_created")
 def on_new_user_created(sender, instance, created, **kwargs):
-    # give achievement for creating account
-    player = CasinoPlayers.objects.get(user=instance)
-    link_table = AchievementsPlayerLinkTable.objects.get(achievement=CREATE_ACCOUNT_ACHIEVEMENT, player=player)
-    
     if instance.is_active:
+        # give achievement for creating account
+        player = CasinoPlayers.objects.get(user=instance)
+        link_table = AchievementsPlayerLinkTable.objects.get(achievement=CREATE_ACCOUNT_ACHIEVEMENT, player=player)
         link_table.player_score = 1
         link_table.achievement_level = 1
-    else:
-        link_table.player_score = 0
-        link_table.achievement_level = 0
-    link_table.save()
+        link_table.save()

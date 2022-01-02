@@ -67,10 +67,10 @@ def activate(request, uidb64, token):
     except ObjectDoesNotExist:
         user = None
     if user is not None and default_token_generator.check_token(user, token):
+        utils.create_casino_player_account(user)
         user.is_active = True
         user.save()
         # after confirming email, create or connect to player account
-        utils.create_casino_player_account(user)
         login(request, user)
         return redirect("/")
     else:
