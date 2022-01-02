@@ -24,7 +24,7 @@
     <div class="col" id="achievements_div">
         <!-- todo bars -->
         <div class="row">
-            <div class="col-4">
+            <div class="col-5">
                 <div class="list-group" id="achievements_list" role="tablist">
                     {% for i in player_achievements %}
                     <a class="list-group-item list-group-item-action bg-dark text-white" data-toggle="list" href="#list-{{i.achievement.name}}" role="tab" aria-controls="{{i.achievement.name}}">
@@ -33,16 +33,17 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="col-8">
+            <div class="col-7">
                 <div class="tab-content" id="achievement_info">
                     {% for i in player_achievements %}
                     <div class="tab-pane fade" id="list-{{i.achievement.name}}" role="tabpanel" aria-labelledby="list-{{i.achievement.name}}">
                         <p><span class="text-danger">{{i.achievement.name}}</span> - {{i.achievement.description}}</p>
-                        <p>Twoje punkty: {{i.player_score}} (poziom osiągniecia: {{i.achievement_level}})</p>
-                        <ul>
-                            <li>{{i.achievement.required_score_1}}</li>
-                            <li>{{i.achievement.required_score_2}}</li>
-                            <li>{{i.achievement.required_score_3}}</li>
+                        <p><span class="text-danger">Twoje punkty</span>: {{i.player_score}} (poziom osiągniecia: {{i.achievement_level}})</p>
+                        <p>Punkty wymagane do zdobycia osiągniecia: </p>
+                        <ul style="list-style:none;">
+                            <li>🥉 {{i.achievement.required_score_1}}</li>
+                            <li>🥈 {{i.achievement.required_score_2}}</li>
+                            <li>🥇 {{i.achievement.required_score_3}}</li>
                         </ul>
                     </div>
                     {% endfor %}
