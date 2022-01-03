@@ -32,7 +32,7 @@ SECRET_KEY = config_parser.get("secret_key", "secret_key")
 load_dotenv()
 DEBUG = bool(int(os.environ.get("DEBUG")))
 if not DEBUG:
-    ALLOWED_HOSTS = [".dogson.ovh", "89.38.135.42", "127.0.0.1"]
+    ALLOWED_HOSTS = [".dogson.ovh", "127.0.0.1"]
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',

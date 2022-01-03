@@ -5,7 +5,7 @@ Run command: gunicorn -c gunicorn_config.py bot_page.wsgi
 from multiprocessing import shared_memory, cpu_count
 
 command = "/root/django_env/bin/gunicorn"
-pythonpath = "/root/django_env/lib/python3.8/site-packages"
+pythonpath = "/root/venv_bot_page/lib/python3.8/site-packages"
 bind = "0.0.0.0:8000"
 workers = cpu_count()*2+1
 
