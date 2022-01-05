@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, ProgrammingError
 from django.conf import settings
 
 from .achievements import AchievementsCheck
@@ -156,7 +156,7 @@ class Achievements(models.Model, AchievementsCheck):
                 achievement.required_score_2 = i["required_score_2"]
                 achievement.required_score_3 = i["required_score_3"]
                 achievement.save()
-        except IntegrityError:
+        except (IntegrityError, ProgrammingError):
             print("Probably migrations are running, achievements haven't been updated")
 
     def __str__(self):
