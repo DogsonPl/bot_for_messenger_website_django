@@ -148,7 +148,7 @@ def reset_daily():
             i.save()
     else:
         CasinoPlayers.objects.all().update(take_daily=False,
-                                           today_scratch_bought=0, money=F("money")*Decimal(0.99))
+                                           today_scratch_bought=0, money=F("money")*Decimal("0.99"))
     cache.set("performing_daily_reset", False, None)
 
 
