@@ -98,9 +98,7 @@ def make_bet(player, percent_to_win: int, wage: float):
         won_money = Decimal(wage*-1)
         player.money += won_money
         player.lost_dc += won_money
-        message = f"""<strong>📉 Przegrano {'%.2f' % wage} dogecoinów</strong>.  
-Masz ich obecnie {format_money(player.money)} 
-Wylosowana liczba: {lucky_number}"""
+        message = f"<strong>📉 𝗣𝗿𝘇𝗲𝗴𝗿𝗮𝗻𝗼 {'%.2f' % wage} dogecoinów</strong>."
 
         link_table = AchievementsPlayerLinkTable.objects.get(achievement=WIN_DOGECOINS_IN_A_ROW_ACHIEVEMENT, player=player)
         if wage != 0:
@@ -112,9 +110,7 @@ Wylosowana liczba: {lucky_number}"""
         won_money = Decimal(((wage / (percent_to_win / 100)) - wage) * 0.99)
         player.money += won_money
         player.won_dc += won_money
-        message = f"""<strong>📈 Wygrano {'%.2f' % won_money} dogecoinów</strong>.  
-Masz ich obecnie {format_money(player.money)} 
-Wylosowana liczba: {lucky_number}"""
+        message = f"<strong>📈 𝗪𝘆𝗴𝗿𝗮𝗻𝗼 {'%.2f' % won_money} dogecoinów</strong>."
         if player.biggest_win < won_money:
             player.biggest_win = won_money
             link_table = AchievementsPlayerLinkTable.objects.get(achievement=WIN_DOGECOINS_ACHIEVEMENT, player=player)
@@ -128,6 +124,7 @@ Wylosowana liczba: {lucky_number}"""
         if cache.get("max_bet_win") < won_money:
             update_the_biggest_win(player, won_money, percent_to_win, wage)
 
+    message += f"\n𝙈𝙖𝙨𝙯 𝙞𝙘𝙝 𝙤𝙗𝙚𝙘𝙣𝙞𝙚 {format_money(player.money)}\n𝙒𝙮𝙡𝙤𝙨𝙤𝙬𝙖𝙣𝙖 𝙡𝙞𝙘𝙯𝙗𝙖: {lucky_number}"
     link_table = AchievementsPlayerLinkTable.objects.get(player=player, achievement=DONE_BETS_ACHIEVEMENT)
     achievement_check.check_achievement_add(DONE_BETS_ACHIEVEMENT, link_table)
     player.save()
@@ -195,8 +192,8 @@ Kolejną możesz odebrać za {timeout} minut"""
         achievement_check.check_achievement_add(WIN_2500_SCRATCH_ACHIEVEMENT, link_table)
     player.save()
 
-    return f"""🔢 W zdrapce wygrałeś/aś {scratch_prize} dogów, profit to {profit} dogów
-Obecnie posiadasz {format_money(player.money)} dogów"""
+    return f"""🔢 𝙒 𝙯𝙙𝙧𝙖𝙥𝙘𝙚 𝙬𝙮𝙜𝙧𝙖ł𝙚𝙨/𝙖𝙨 {scratch_prize} dogów, profit to {profit} dogów
+𝙊𝙗𝙚𝙘𝙣𝙞𝙚 𝙥𝙤𝙨𝙞𝙖𝙙𝙖𝙨𝙯 {format_money(player.money)} dogów"""
 
 
 def get_scratch_prize() -> int:
