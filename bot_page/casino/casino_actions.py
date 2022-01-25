@@ -124,7 +124,7 @@ def make_bet(player, percent_to_win: int, wage: float):
         if cache.get("max_bet_win") < won_money:
             update_the_biggest_win(player, won_money, percent_to_win, wage)
 
-    message += f"\n𝙈𝙖𝙨𝙯 𝙞𝙘𝙝 𝙤𝙗𝙚𝙘𝙣𝙞𝙚 {format_money(player.money)}\n𝙒𝙮𝙡𝙤𝙨𝙤𝙬𝙖𝙣𝙖 𝙡𝙞𝙘𝙯𝙗𝙖: {lucky_number}"
+    message += f"\n𝐌𝐚𝐬𝐳 𝐢𝐜𝐡 𝐨𝐛𝐞𝐜𝐧𝐢𝐞 {format_money(player.money)}\n𝐖𝐲𝐥𝐨𝐬𝐨𝐰𝐚𝐧𝐚 𝐥𝐢𝐜𝐳𝐛𝐚: {lucky_number}"
     link_table = AchievementsPlayerLinkTable.objects.get(player=player, achievement=DONE_BETS_ACHIEVEMENT)
     achievement_check.check_achievement_add(DONE_BETS_ACHIEVEMENT, link_table)
     player.save()
@@ -192,8 +192,8 @@ Kolejną możesz odebrać za {timeout} minut"""
         achievement_check.check_achievement_add(WIN_2500_SCRATCH_ACHIEVEMENT, link_table)
     player.save()
 
-    return f"""🔢 𝙒 𝙯𝙙𝙧𝙖𝙥𝙘𝙚 𝙬𝙮𝙜𝙧𝙖ł𝙚𝙨/𝙖𝙨 {scratch_prize} dogów, profit to {profit} dogów
-𝙊𝙗𝙚𝙘𝙣𝙞𝙚 𝙥𝙤𝙨𝙞𝙖𝙙𝙖𝙨𝙯 {format_money(player.money)} dogów"""
+    return f"""🔢 𝗪 𝘇𝗱𝗿𝗮𝗽𝗰𝗲 𝘄𝘆𝗴𝗿𝗮𝗹𝗲𝘀/𝗮𝘀 {scratch_prize} dogów, profit to {profit} dogów
+𝐌𝐚𝐬𝐳 𝐢𝐜𝐡 𝐨𝐛𝐞𝐜𝐧𝐢𝐞 {format_money(player.money)} dogów"""
 
 
 def get_scratch_prize() -> int:
