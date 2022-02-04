@@ -35,7 +35,6 @@ except (ObjectDoesNotExist, ProgrammingError):
     print("Cannot find all achievements on casino/casino_actions.py")
 
 
-
 # key - prize
 # value - chance to win
 SCRATCH_PRIZES_DICT = {"0": 19,
@@ -60,7 +59,8 @@ def set_daily(player) -> str:
         return """💤 Obecnie jest wykonywany reset, spróbuj ponownie za kilka sekund"""
     if not player.take_daily:
         players_who_took_daily = CasinoPlayers.objects.filter(take_daily=True)
-        if len(players_who_took_daily) == 0:
+        number_of_players_who_took_daily = len(players_who_took_daily)
+        if number_of_players_who_took_daily == 0:
             received_bonus = 100
             extra_message = "❤ JESTEŚ PIERWSZĄ OSOBĄ KTÓRA ODEBRAŁA DAILY! OTRZYMUJESZ BONUSOWE 100 DOGÓW\n"
         else:
@@ -73,7 +73,7 @@ def set_daily(player) -> str:
         player.take_daily = True
         player.save()
         message = extra_message + f"""✅ Otrzymano właśnie darmowe {'%.2f' % received} dogecoinów.
-Jest to twoje {player.daily_strike} daily z rzędu"""
+Jest to twoje {player.daily_strike} daily z rzędu i jesteś {number_of_players_who_took_daily+1} osobą która odebrała daily (osoba która jako pierwsza odbierze daily otrzymuje bonusowe 100 dogów)"""
 
         link_table = AchievementsPlayerLinkTable.objects.get(player=player, achievement=DAILY_STRIKE_ACHIEVEMENT)
         achievement_check.check_achievement_add(DAILY_STRIKE_ACHIEVEMENT, link_table)
