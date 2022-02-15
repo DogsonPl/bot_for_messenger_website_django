@@ -1,7 +1,7 @@
 from django.contrib import admin
 # Register your models here.
 from .models import CasinoPlayers, Jackpot, JackpotsResults, BetsHistory, MoneyHistory, UsersTotalMoneyHistory, \
-                    TwentyFourHoursMoneyHistory, AchievementsPlayerLinkTable, Achievements
+                    TwentyFourHoursMoneyHistory, AchievementsPlayerLinkTable, Achievements, Shop
 
 
 @admin.register(CasinoPlayers)
@@ -54,4 +54,9 @@ class AchievementsPlayerLinkTable(admin.ModelAdmin):
 
 @admin.register(Achievements)
 class Achievement(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Shop)
+class Shop(admin.ModelAdmin):
     pass

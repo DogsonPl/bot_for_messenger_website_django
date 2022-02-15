@@ -14,13 +14,16 @@ from django.conf import settings
 import channels.layers
 
 from utils import statistic_data
-from .models import Jackpot, CasinoPlayers, AchievementsPlayerLinkTable, Achievements
+from .models import Jackpot, CasinoPlayers, AchievementsPlayerLinkTable, Achievements, Shop
 from .utils import format_money, count_scratch_card_timeout
 from .achievements import AchievementsCheck, ACHIEVEMENTS
+from . import shop
 
+shop_obj = shop.Shop()
 getcontext().prec = 20
 achievement_check = AchievementsCheck()
 Achievements.create_achievements(ACHIEVEMENTS)
+Shop.create_shop_table(shop_obj.SHOP_ITEMS)
 
 try:
     WIN_DOGECOINS_ACHIEVEMENT = Achievements.objects.get(id=Achievements.win_dogecoins_in_one_bet_achievement_id)
@@ -91,14 +94,19 @@ def make_bet(player, percent_to_win: int, wage: float):
     result 0 --> player lost
     result 1 --> player won
     """
+    message = ""
     lucky_number = get_random_number()
+    if player.lower_lucky_number_time > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)):
+        lucky_number -= 4
+        lucky_number = round(lucky_number, 2)
+        message += "Będziesz miał zmniejszoną losowaną liczbe o 5 jeszcze przez " + str(player.lower_lucky_number_time - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7] + "\n\n"
     if lucky_number >= percent_to_win:
         player.lost_bets += 1
         result = 0
         won_money = Decimal(wage*-1)
         player.money += won_money
         player.lost_dc += won_money
-        message = f"<strong>📉 𝗣𝗿𝘇𝗲𝗴𝗿𝗮𝗻𝗼 {'%.2f' % wage} dogecoinów</strong>."
+        message += f"<strong>📉 𝗣𝗿𝘇𝗲𝗴𝗿𝗮𝗻𝗼 {'%.2f' % wage} dogecoinów</strong>."
 
         link_table = AchievementsPlayerLinkTable.objects.get(achievement=WIN_DOGECOINS_IN_A_ROW_ACHIEVEMENT, player=player)
         if wage != 0:
@@ -108,9 +116,12 @@ def make_bet(player, percent_to_win: int, wage: float):
         player.won_bets += 1
         result = 1
         won_money = Decimal(((wage / (percent_to_win / 100)) - wage) * 0.99)
+        if player.bigger_win_time > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)):
+            won_money *= Decimal(1.05)
+            message += "Twoje wygrane będą powiększane o 10% jeszcze przez " + str(player.bigger_win_time - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7] + "\n\n"
         player.money += won_money
         player.won_dc += won_money
-        message = f"<strong>📈 𝗪𝘆𝗴𝗿𝗮𝗻𝗼 {'%.2f' % won_money} dogecoinów</strong>."
+        message += f"<strong>📈 𝗪𝘆𝗴𝗿𝗮𝗻𝗼 {'%.2f' % won_money} dogecoinów</strong>."
         if player.biggest_win < won_money:
             player.biggest_win = won_money
             link_table = AchievementsPlayerLinkTable.objects.get(achievement=WIN_DOGECOINS_ACHIEVEMENT, player=player)
@@ -169,11 +180,18 @@ def buy_ticket(player, tickets_to_buy: int) -> int:
 def buy_scratch_card(player):
     if player.money < 5:
         return "🚫 Nie masz wystarczająco dogecoinów by kupić zdrapke, koszt zdrapki to 5 dogecoinów"
+    message = ""
+    if player.faster_scratch_time > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)):
+        message += "Będziesz mógł odbierać szybciej zdrapki jeszcze przez " + str(player.faster_scratch_time - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[0:8] + "\n\n"
+        minutes = 10
+    else:
+        minutes = 20
     try:
-        if player.last_time_scratch > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)) - timedelta(minutes=20):
-            timeout = count_scratch_card_timeout(player)
-            return f"""⏳ Możesz kupić jedną zdrapke w ciągu 20 minut
+        if player.last_time_scratch > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)) - timedelta(minutes=minutes):
+            timeout = count_scratch_card_timeout(player, minutes)
+            message += f"""⏳ Możesz kupić jedną zdrapke w ciągu 20 minut
 Kolejną możesz odebrać za {timeout} minut"""
+            return message
     except TypeError:
         pass
     scratch_prize = get_scratch_prize()
@@ -192,8 +210,9 @@ Kolejną możesz odebrać za {timeout} minut"""
         achievement_check.check_achievement_add(WIN_2500_SCRATCH_ACHIEVEMENT, link_table)
     player.save()
 
-    return f"""🔢 𝗪 𝘇𝗱𝗿𝗮𝗽𝗰𝗲 𝘄𝘆𝗴𝗿𝗮𝗹𝗲𝘀/𝗮𝘀 {scratch_prize} dogów, profit to {profit} dogów
+    message += f"""🔢 𝗪 𝘇𝗱𝗿𝗮𝗽𝗰𝗲 𝘄𝘆𝗴𝗿𝗮𝗹𝗲𝘀/𝗮𝘀 {scratch_prize} dogów, profit to {profit} dogów
 𝐌𝐚𝐬𝐳 𝐢𝐜𝐡 𝐨𝐛𝐞𝐜𝐧𝐢𝐞 {format_money(player.money)} dogów"""
+    return message
 
 
 def get_scratch_prize() -> int:
@@ -219,3 +238,16 @@ def send_bet_signal(player_name, wage, lucky_number, drawn_number, result, won_m
             "type": 'new_bet',
             "content": json.dumps({"bet_info": bet_info, "win": result})
         })
+
+
+def shop(player, item_id):
+    try:
+        shop_item = shop_obj.SHOP_ITEMS[int(item_id)-1]
+        if shop_item["cost"] < player.legendary_dogecoins:
+            message = shop_item["function"](player)
+            player.save()
+        else:
+            message = f"🚫 Nie masz wystarczająco legendarnych dogecoinów (żeby kupić tego boosta trzeba mieć {shop_item['cost']} legendarnych dogecoinów, ty posiadasz {player.legendary_dogecoins})"
+    except (IndexError, ValueError):
+        message = "🚫 Nie ma boosta o takiej nazwie"
+    return message

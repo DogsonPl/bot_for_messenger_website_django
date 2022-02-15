@@ -1,6 +1,10 @@
+from datetime import datetime
+
 from django.db import models
+from django.db.models import ObjectDoesNotExist
 from django.db.utils import IntegrityError, ProgrammingError
 from django.conf import settings
+import pytz
 
 from .achievements import AchievementsCheck
 
@@ -30,6 +34,9 @@ class CasinoPlayers(models.Model):
     season_third_place = models.PositiveSmallIntegerField(default=0)
     won_dc = models.DecimalField(default=0, decimal_places=10, max_digits=30)
     lost_dc = models.DecimalField(default=0, decimal_places=10, max_digits=30)
+    faster_scratch_time = models.DateTimeField(default=datetime.now(tz=pytz.timezone(settings.TIME_ZONE)), blank=False, null=False)
+    lower_lucky_number_time = models.DateTimeField(default=datetime.now(tz=pytz.timezone(settings.TIME_ZONE)), blank=False, null=False)
+    bigger_win_time = models.DateTimeField(default=datetime.now(tz=pytz.timezone(settings.TIME_ZONE)), blank=False, null=False)
 
     class Meta:
         verbose_name = "Player"
@@ -178,3 +185,30 @@ class AchievementsPlayerLinkTable(models.Model):
 
     def __str__(self):
         return f"{self.player} - {self.achievement}"
+
+
+class Shop(models.Model):
+    description = models.CharField(max_length=250, null=False, blank=False)
+    cost = models.PositiveSmallIntegerField(null=False, blank=False)
+
+    class Meta:
+        verbose_name = "Item in the shop"
+        verbose_name_plural = "Items in the shop"
+        db_table = "shop"
+
+    @staticmethod
+    def create_shop_table(items):
+        try:
+            for i in items:
+                try:
+                    item = Shop.objects.get(id=i["id"])
+                    item.description = i["description"]
+                    item.cost = i["cost"]
+                except ObjectDoesNotExist:
+                    item = Shop(id=i["id"], description=i["description"], cost=i["cost"])
+                item.save()
+        except (IntegrityError, ProgrammingError):
+            print("Probably migrations are running, shop haven't been updated")
+
+    def __str__(self):
+        return self.description

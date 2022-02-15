@@ -196,3 +196,29 @@ def create_account_fb(request):
     except IntegrityError:
         message = "🚫 Masz już założone konto"
     return JsonResponse({"message": message})
+
+
+def shop(request):
+    if request.method == "POST":
+        player = CasinoPlayers.objects.get(user=request.user)
+        item_id = request.POST["item_id"]
+        message = casino_actions.shop(player, item_id)
+        return JsonResponse({"message": message})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
+@csrf_exempt
+@check_post_password
+def shop_fb(request):
+    if request.method == "POST":
+        try:
+            player = CasinoPlayers.objects.get(user_fb_id=request.POST["user_fb_id"])
+        except ObjectDoesNotExist:
+            message = FB_REGISTER_ACCOUNT_MESSAGE
+        else:
+            item_id = request.POST["item_id"]
+            message = casino_actions.shop(player, item_id)
+        return JsonResponse({"message": message})
+    else:
+        return JsonResponse({"status": "forbidden"})
