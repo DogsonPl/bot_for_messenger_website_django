@@ -1,9 +1,13 @@
+from datetime import datetime
+
+from django.contrib.auth import settings
 from django.db import transaction
 from django.db.models import Sum, ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+import pytz
 
 from .models import CasinoPlayers, BetsHistory, Jackpot
 from .forms import BetForm, JackpotForm
@@ -48,8 +52,11 @@ def index(request):
 
         bet_form = BetForm(initial={"bet_money": 0})
         jackpot_form = JackpotForm(initial={"tickets": 0})
-
-        scratch_timeout = count_scratch_card_timeout(player)
+        if player.faster_scratch_time > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)):
+            minutes = 10
+        else:
+            minutes = 20
+        scratch_timeout = count_scratch_card_timeout(player, minutes)
 
         return render(request, "casino/index.html", {"nav_bar": "casino",
                                                      "bet_form": bet_form,
