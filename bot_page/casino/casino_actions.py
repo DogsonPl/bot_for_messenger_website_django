@@ -247,7 +247,7 @@ def shop(player, item_id):
             message = shop_item["function"](player)
             player.save()
         else:
-            message = f"🚫 Nie masz wystarczająco legendarnych dogecoinów (żeby kupić tego boosta trzeba mieć {shop_item['cost']} legendarnych dogecoinów, ty posiadasz {player.legendary_dogecoins})"
+            message = f"🚫 Nie masz wystarczająco legendarnych dogecoinów (żeby kupić tego boosta trzeba mieć {shop_item['cost']} legendarnych dogecoinów, ty posiadasz {format_money(player.legendary_dogecoins)})"
     except (IndexError, ValueError):
         message = "🚫 Nie ma boosta o takiej nazwie"
     return message
