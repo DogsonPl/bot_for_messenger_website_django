@@ -246,8 +246,11 @@ def shop(player, item_id):
         if shop_item["cost"] < player.legendary_dogecoins:
             message = shop_item["function"](player)
             player.save()
+            bought = True
         else:
             message = f"🚫 Nie masz wystarczająco legendarnych dogecoinów (żeby kupić tego boosta trzeba mieć {shop_item['cost']} legendarnych dogecoinów, ty posiadasz {format_money(player.legendary_dogecoins)})"
+            bought = False
     except (IndexError, ValueError):
         message = "🚫 Nie ma boosta o takiej nazwie"
-    return message
+        bought = False
+    return message, bought

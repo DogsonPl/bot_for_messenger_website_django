@@ -38,11 +38,35 @@
         </div>
         <div class="col-sm-6">
             <div class="card">
+                <div class="card-header">
+                   <h3>Sklep</h3>
+                </div>
                 <div class="card-body">
-                    <button class="btn btn-warning" type="button" id="scratch_button">Kup zdrapke (5 dogów)</button>
-                    <p class="mt-1" id="scratch_timeout_p">Możesz odebrać zdrapke</p>
-                    <!-- add "fill" (bi-info-circle-fill) in class name if you want fill info icon with color -->
-                    <div><i class="bi bi-info-circle" id="scratch_card_info" style="color: red;"></i></div>
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="list-group" id="achievements_list" role="tablist">
+                                {% for i in items %}
+                                <a class="list-group-item list-group-item-action bg-dark text-white" data-toggle="list" href="#list-{{i.0.id}}" role="tab" aria-controls="{{i.0.id}}">
+                                    {{i.0.id}}
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="tab-content" id="achievement_info">
+                                {% for item, time in items %}
+                                <div class="tab-pane fade" id="list-{{item.id}}" role="tabpanel" aria-labelledby="list-{{item.id}}">
+                                    <p>{{item.description}}</p>
+                                    {% if time.1 %}
+                                    <p>{{time.0}}</p>
+                                    {% else %}
+                                    <button class="btn btn-primary" onclick="shop(this)" value="{{item.id}}">Kup</button>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -70,22 +94,31 @@
                             </div>
                         </div>
                     </form>
-                    <div id="bet_info_div" class="alert" role="alert" hidden><span id="bet_info"></span></div>
+                    <div id="bet_info_div" class="alert" role="alert" style="margin-top: 3px;"><span id="bet_info"></span></div>
                 </div>
             </div>
         </div>
         <div class="col-sm-5 col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <form id="jackpot">
-                        {% csrf_token %}
-                        {{ jackpot_form | crispy }}
-                        <button class="btn btn-warning" id="jackpot_button" type="submit">Kup bilety</button>
-                    </form>
-                    <p>Twoja liczba biletów: <span id="user_tickets">{{ user_tickets }}</span></p>
-                    <p>Suma wszystkich biletów: <span id="total_tickets">{{ total_tickets }}</span></p>
-                    <!-- add "fill" (bi-info-circle-fill) in class name if you want fill info icon with color -->
-                    <div><i class="bi bi-info-circle" id="jackpot_info" style="color: red;"></i></div>
+                    <div>
+                        <button class="btn btn-warning" type="button" id="scratch_button">Kup zdrapke (5 dogów)</button>
+                        <p class="mt-1" id="scratch_timeout_p">Możesz odebrać zdrapke</p>
+                        <!-- add "fill" (bi-info-circle-fill) in class name if you want fill info icon with color -->
+                        <div><i class="bi bi-info-circle" id="scratch_card_info" style="color: red;"></i></div>
+                    </div>
+                    <hr class="bg-danger">
+                    <div>
+                        <form id="jackpot">
+                            {% csrf_token %}
+                            {{ jackpot_form | crispy }}
+                            <button class="btn btn-warning" id="jackpot_button" type="submit">Kup bilety</button>
+                        </form>
+                        <p>Twoja liczba biletów: <span id="user_tickets">{{ user_tickets }}</span></p>
+                        <p>Suma wszystkich biletów: <span id="total_tickets">{{ total_tickets }}</span></p>
+                        <!-- add "fill" (bi-info-circle-fill) in class name if you want fill info icon with color -->
+                        <div><i class="bi bi-info-circle" id="jackpot_info" style="color: red;"></i></div>
+                    </div>
                 </div>
             </div>
         </div>

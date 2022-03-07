@@ -11,8 +11,11 @@ import pytz
 
 from .models import CasinoPlayers, BetsHistory, Jackpot
 from .forms import BetForm, JackpotForm
-from .utils import check_post_password, format_money, count_scratch_card_timeout
+from .utils import check_post_password, format_money, count_scratch_card_timeout, check_boost_time
 from . import casino_actions
+from .shop import Shop
+
+shop_items = Shop().SHOP_ITEMS
 
 
 FB_REGISTER_ACCOUNT_MESSAGE = "💡 Użyj polecenia !register żeby móc się bawić w kasyno. Wszystkie dogecoiny są sztuczne"
@@ -50,14 +53,25 @@ def index(request):
         else:
             user_tickets = user_tickets.tickets
 
+        now = datetime.now(tz=pytz.timezone(settings.TIME_ZONE))
         bet_form = BetForm(initial={"bet_money": 0})
         jackpot_form = JackpotForm(initial={"tickets": 0})
-        if player.faster_scratch_time > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)):
+        if player.faster_scratch_time > now:
             minutes = 10
         else:
             minutes = 20
         scratch_timeout = count_scratch_card_timeout(player, minutes)
 
+        boost_timers = []
+        shop_faster_scratch_time = player.faster_scratch_time - now
+        boost_timers.append(shop_faster_scratch_time)
+        shop_lower_lucky_number_time = player.lower_lucky_number_time - now
+        boost_timers.append(shop_lower_lucky_number_time)
+        shop_bigger_win_time = player.bigger_win_time - now
+        boost_timers.append(shop_bigger_win_time)
+
+        boost_timers = [check_boost_time(i) for i in boost_timers]
+        shop_items_ = list(zip(shop_items, boost_timers))
         return render(request, "casino/index.html", {"nav_bar": "casino",
                                                      "bet_form": bet_form,
                                                      "jackpot_form": jackpot_form,
@@ -66,7 +80,8 @@ def index(request):
                                                      "last_bets": last_bets,
                                                      "total_tickets": total_tickets,
                                                      "user_tickets": user_tickets,
-                                                     "scratch_timeout": scratch_timeout})
+                                                     "scratch_timeout": scratch_timeout,
+                                                     "items": shop_items_})
     else:
         # todo demo page
         return redirect("account:login")
@@ -174,7 +189,10 @@ def buy_scratch_card(request):
     if request.method == "POST":
         player = CasinoPlayers.objects.get(user=request.user)
         message = casino_actions.buy_scratch_card(player)
-        return JsonResponse({"message": message, "player_money": format_money(player.money)})
+        now = datetime.now(tz=pytz.timezone(settings.TIME_ZONE))
+        shop_faster_scratch_time = player.faster_scratch_time - now
+        _, scratch_boost = check_boost_time(shop_faster_scratch_time)
+        return JsonResponse({"message": message, "player_money": format_money(player.money), "scratch_boost": scratch_boost})
     else:
         return JsonResponse({"status": "forbidden"})
 
@@ -209,8 +227,8 @@ def shop(request):
     if request.method == "POST":
         player = CasinoPlayers.objects.get(user=request.user)
         item_id = request.POST["item_id"]
-        message = casino_actions.shop(player, item_id)
-        return JsonResponse({"message": message})
+        message, bought = casino_actions.shop(player, item_id)
+        return JsonResponse({"message": message, "bought": bought})
     else:
         return JsonResponse({"status": "forbidden"})
 
@@ -225,7 +243,7 @@ def shop_fb(request):
             message = FB_REGISTER_ACCOUNT_MESSAGE
         else:
             item_id = request.POST["item_id"]
-            message = casino_actions.shop(player, item_id)
+            message, bought = casino_actions.shop(player, item_id)
         return JsonResponse({"message": message})
     else:
         return JsonResponse({"status": "forbidden"})

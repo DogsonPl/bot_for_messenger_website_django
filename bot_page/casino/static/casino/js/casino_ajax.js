@@ -78,7 +78,6 @@ $("#bet").on("submit", function(event){
             else{
                 send_modal_message("Podano nieprawidłowe dane")
             }
-            bet_info_div.hidden = false
             bet_info.innerHTML = response["message"]
             bet_button.disabled = false
         },
@@ -143,7 +142,12 @@ $("#scratch_button").on("click", function(event){
                 user_money.innerHTML = player_money
                 user_money_navbar.innerHTML = player_money
                 scratch_button.disabled = true
-                scratch_timeout = "19:59"
+                if(response["scratch_boost"]){
+                    scratch_timeout = "9:59"
+                }
+                else{
+                    scratch_timeout = "19:59"
+                }
                 scratch_timeout_p.innerHTML = "Możesz odebrać zdrapke za " + scratch_timeout + " minut"
                 var scratch_timer = setInterval(update_scratch_timeout, 1000, [scratch_timeout])
             }
@@ -155,6 +159,31 @@ $("#scratch_button").on("click", function(event){
         contentType: false,
     })
 })
+
+
+function shop(button){
+    const data = new FormData()
+    data.append('csrfmiddlewaretoken', csrf)
+    data.append("item_id", button.value)
+    $.ajax({
+        type: 'POST',
+        url: 'shop',
+        data: data,
+        success: function(response){
+            if(response["bought"]){
+                location.reload()
+            }
+            else{
+                send_modal_message(response["message"])
+            }
+        },
+        error: function(error){
+            send_modal_message("Ups, nastąpił błąd po stronie serwera. Spróbuj ponownie później")
+        },
+        processData: false,
+        contentType: false,
+    })
+}
 
 
 function send_modal_message(message){

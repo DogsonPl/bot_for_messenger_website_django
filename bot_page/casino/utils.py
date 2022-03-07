@@ -32,3 +32,9 @@ def count_scratch_card_timeout(player, minutes) -> str:
         return str(player.last_time_scratch + timedelta(minutes=minutes) - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7]
     except TypeError:
         return ""
+
+
+def check_boost_time(time):
+    if time.days < 0:
+        return "Nie kupione", False
+    return f"Boost będzie działał jeszcze przez {str(time).split('.')[0]} (trzeba odświeżyć strone żeby odświeżyć czas)", True
