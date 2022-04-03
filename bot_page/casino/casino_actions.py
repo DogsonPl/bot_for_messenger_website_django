@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 import pytz
 import json
 from asgiref.sync import async_to_sync
+import random as rd
+from collections import Counter
 
 from django.db import transaction, ProgrammingError
 from django.db.models import ObjectDoesNotExist
@@ -34,6 +36,7 @@ try:
     BOUGHT_SCRATCHES = Achievements.objects.get(id=Achievements.bought_scratches_id)
     DAILY_STRIKE_ACHIEVEMENT = Achievements.objects.get(id=Achievements.daily_strike_achievement_id)
     DAILY_STRIKE_TOTAL = Achievements.objects.get(id=Achievements.daily_total_id)
+    SLOTKARZ_ID = Achievements.objects.get(id=Achievements.slotakrz_id)
 except (ObjectDoesNotExist, ProgrammingError):
     print("Cannot find all achievements on casino/casino_actions.py")
 
@@ -55,6 +58,13 @@ SCRATCH_PRIZES = [int(i) for i, _ in SCRATCH_PRIZES_DICT.items()]
 PRIZES_SUM = 0
 total = 0
 SCRATCH_PRIZES_WEIGHTS = [total := total + i for i in SCRATCH_CHANCES]
+SLOTS_PRIZE = {
+    "1": 0,
+    "2": 3,
+    "3": 7,
+    "4": 20,
+    "5": 100
+}
 
 
 def set_daily(player) -> str:
@@ -254,3 +264,22 @@ def shop(player, item_id):
         message = "🚫 Nie ma boosta o takiej nazwie"
         bought = False
     return message, bought
+
+
+def slots_game(player):
+    if player.money < 5:
+        return f"🚫 Zagranie kostuje 5 dogów, a masz {format_money(player.money)} dogów"
+
+    player.money -= 5
+    nums = []
+    for _ in range(5):
+        nums.append(rd.randint(1, 5))
+    most_common_num, quantity = Counter(nums).most_common()[0]
+    prize = SLOTS_PRIZE[str(quantity)]
+
+    link_table = AchievementsPlayerLinkTable.objects.get(player=player, achievement=SLOTKARZ_ID)
+    achievement_check.check_achievement_add(SLOTKARZ_ID, link_table)
+    player.money += prize
+    player.save()
+
+    return f"{quantity} razy został wylosowany numer {most_common_num}, daje ci to {prize} dogów\n𝐌𝐚𝐬𝐳 𝐢𝐜𝐡 𝐨𝐛𝐞𝐜𝐧𝐢𝐞 {format_money(player.money)}"

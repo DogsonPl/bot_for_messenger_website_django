@@ -16,5 +16,7 @@ urlpatterns = [
     path("buy_scratch_card_fb", views.buy_scratch_card_fb, name="buy_scratch_card_fb"),
     path("create_account", views.create_account_fb, name="create_account"),
     path("shop", views.shop, name="shop"),
-    path("shop_fb", views.shop_fb, name="shop_fb")
+    path("shop_fb", views.shop_fb, name="shop_fb"),
+    path("slots", views.slots, name="slots"),
+    path("slots_fb", views.slots_fb, name="slots_fb")
 ]

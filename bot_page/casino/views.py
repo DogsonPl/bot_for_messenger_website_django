@@ -247,3 +247,27 @@ def shop_fb(request):
         return JsonResponse({"message": message})
     else:
         return JsonResponse({"status": "forbidden"})
+
+
+def slots(request):
+    if request.method == "POST":
+        player = CasinoPlayers.objects.get(user=request.user)
+        message = casino_actions.slots_game(player)
+        return JsonResponse({"message": message})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
+@csrf_exempt
+@check_post_password
+def slots_fb(request):
+    if request.method == "POST":
+        try:
+            player = CasinoPlayers.objects.get(user_fb_id=request.POST["user_fb_id"])
+        except ObjectDoesNotExist:
+            message = FB_REGISTER_ACCOUNT_MESSAGE
+        else:
+            message = casino_actions.slots_game(player)
+        return JsonResponse({"message": message})
+    else:
+        return JsonResponse({"status": "forbidden"})

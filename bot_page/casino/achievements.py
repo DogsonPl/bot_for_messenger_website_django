@@ -10,6 +10,7 @@ won 2500 in the scratch [1, 3, 5] id: 7
 bought scratches [50, 200, 750] id: 8
 get daily strike [20, 100, 365] id: 9
 take daily x times [50, 200, 500] id: 10
+play in slots x ttimes [150, 400, 1000] id: 11
 """
 
 from django.db import IntegrityError
@@ -101,8 +102,15 @@ ACHIEVEMENTS = [
         "required_score_3": 500,
         "description": "Odbierz daily łącznie 50, 200, 500 razy"
     },
+    {
+        "id": 11,
+        "name": "Slotkarz",
+        "required_score_1": 150,
+        "required_score_2": 400,
+        "required_score_3": 1000,
+        "description": "Zagraj w gre slots łącznie 15, 400, 1000 razy"
+    }
 ]
-# todo zrob zeby to sie automatycznie dodawalo
 
 
 class AchievementsCheck:
@@ -116,6 +124,7 @@ class AchievementsCheck:
     bought_scratches_id = 8
     daily_strike_achievement_id = 9
     daily_total_id = 10
+    slotakrz_id = 11
 
     def check_achievement_add(self, achievement: Achievements, achievement_link: AchievementsPlayerLinkTable, player_score_add=1):
         achievement_link.player_score += player_score_add
