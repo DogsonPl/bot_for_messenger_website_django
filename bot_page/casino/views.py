@@ -252,8 +252,11 @@ def shop_fb(request):
 def slots(request):
     if request.method == "POST":
         player = CasinoPlayers.objects.get(user=request.user)
-        message = casino_actions.slots_game(player)
-        return JsonResponse({"message": message})
+        message, numbers, most_common_num = casino_actions.slots_game(player)
+        return JsonResponse({"message": message,
+                             "nums": numbers,
+                             "player_money": format_money(player.money),
+                             "most_common_num": most_common_num})
     else:
         return JsonResponse({"status": "forbidden"})
 
@@ -267,7 +270,7 @@ def slots_fb(request):
         except ObjectDoesNotExist:
             message = FB_REGISTER_ACCOUNT_MESSAGE
         else:
-            message = casino_actions.slots_game(player)
+            message, numbers, most_common_num = casino_actions.slots_game(player)
         return JsonResponse({"message": message})
     else:
         return JsonResponse({"status": "forbidden"})

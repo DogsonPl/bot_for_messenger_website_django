@@ -268,7 +268,7 @@ def shop(player, item_id):
 
 def slots_game(player):
     if player.money < 5:
-        return f"🚫 Zagranie kostuje 5 dogów, a masz {format_money(player.money)} dogów"
+        return f"🚫 Zagranie kostuje 5 dogów, a masz {format_money(player.money)} dogów", []
 
     player.money -= 5
     nums = []
@@ -282,4 +282,4 @@ def slots_game(player):
     player.money += prize
     player.save()
 
-    return f"{quantity} razy został wylosowany numer {most_common_num}, daje ci to {prize} dogów\n𝐌𝐚𝐬𝐳 𝐢𝐜𝐡 𝐨𝐛𝐞𝐜𝐧𝐢𝐞 {format_money(player.money)}"
+    return f"{quantity} razy został wylosowany numer {most_common_num}, daje ci to {prize} dogów\n𝐌𝐚𝐬𝐳 𝐢𝐜𝐡 𝐨𝐛𝐞𝐜𝐧𝐢𝐞 {format_money(player.money)}", nums, most_common_num

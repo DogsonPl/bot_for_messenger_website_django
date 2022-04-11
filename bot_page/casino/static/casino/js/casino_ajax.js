@@ -5,11 +5,19 @@ const daily_button = document.getElementById("daily_button")
 const bet_button = document.getElementById("bet_button")
 const jackpot_button = document.getElementById("jackpot_button")
 const scratch_button = document.getElementById("scratch_button")
+const slots_button = document.getElementById("slots_button")
 const user_tickets = document.getElementById("user_tickets")
 const total_tickets = document.getElementById("total_tickets")
 const bet_info = document.getElementById("bet_info")
 const bet_info_div = document.getElementById("bet_info_div")
 const modal_message_box = document.getElementById("modal_info")
+const s_num1 = document.getElementById("s_num1")
+const s_num2 = document.getElementById("s_num2")
+const s_num3 = document.getElementById("s_num3")
+const s_num4 = document.getElementById("s_num4")
+const s_num5 = document.getElementById("s_num5")
+const slots_message = document.getElementById("slots_message")
+const nums_slots = document.getElementById("nums_slots")
 
 const csrf = document.getElementsByName("csrfmiddlewaretoken")[0].value
 const form_percent_to_win = document.getElementsByName("percent_to_win")[0]
@@ -184,6 +192,44 @@ function shop(button){
         contentType: false,
     })
 }
+
+
+$("#slots_button").on("click", function(event){
+    slots_button.disabled = true
+    event.preventDefault()
+    const data = new FormData()
+    data.append('csrfmiddlewaretoken', csrf)
+    $.ajax({
+        type: 'POST',
+        url: 'slots',
+        data: data,
+        success: function(response){
+            player_money = response["player_money"]
+            user_money.innerHTML = player_money
+            user_money_navbar.innerHTML = player_money
+            s_num1.innerHTML = response["nums"][0]
+            s_num2.innerHTML = response["nums"][1]
+            s_num3.innerHTML = response["nums"][2]
+            s_num4.innerHTML = response["nums"][3]
+            s_num5.innerHTML = response["nums"][4]
+            slots_message.innerHTML = response["message"]
+            let most_common_num =response["most_common_num"]
+            for(let i=0; i<nums_slots.children.length; i++){
+                let element = nums_slots.children[i]
+                element.classList.remove("text-danger")
+                if(element.textContent==most_common_num){
+                    element.classList.add("text-danger")
+                }
+            }
+            slots_button.disabled = false
+        },
+        error: function(error){
+            send_modal_message("Ups, nastąpił błąd po stronie serwera. Spróbuj ponownie później")
+        },
+        processData: false,
+        contentType: false,
+    })
+})
 
 
 function send_modal_message(message){
