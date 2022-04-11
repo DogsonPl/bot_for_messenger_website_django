@@ -268,7 +268,7 @@ def shop(player, item_id):
 
 def slots_game(player):
     if player.money < 5:
-        return f"🚫 Zagranie kostuje 5 dogów, a masz {format_money(player.money)} dogów", []
+        return f"🚫 Zagranie kostuje 5 dogów, a masz {format_money(player.money)} dogów", [], None
 
     player.money -= 5
     nums = []
