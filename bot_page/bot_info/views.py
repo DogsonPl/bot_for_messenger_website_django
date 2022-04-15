@@ -23,7 +23,10 @@ def index(request):
     if request.user.is_authenticated:
         user_player = CasinoPlayers.objects.get(user=request.user)
         total_bets = user_player.won_bets+user_player.lost_bets
-        won_bets_percent = str((user_player.won_bets / total_bets) * 100)[0:5]
+        try:
+            won_bets_percent = str((user_player.won_bets / total_bets) * 100)[0:5]
+        except ZeroDivisionError:
+            won_bets_percent = 0
         user_money_statistic_data = MoneyHistory.objects.filter(player=user_player)
         user_money_statistic_data = serialize_to_json(user_money_statistic_data)
         user_money_daily_statistic_data = TwentyFourHoursMoneyHistory.objects.filter(player=user_player)

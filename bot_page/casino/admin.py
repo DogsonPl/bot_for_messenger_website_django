@@ -49,7 +49,7 @@ class TwentyFourHoursMoneyHistory(admin.ModelAdmin):
 
 @admin.register(AchievementsPlayerLinkTable)
 class AchievementsPlayerLinkTable(admin.ModelAdmin):
-    pass
+    search_fields = ("player__user__username__startswith",)
 
 
 @admin.register(Achievements)
