@@ -8,3 +8,5 @@ gunicorn
 mysql
 mysqlclient
 channels
+python-dotenv
+pymemcache

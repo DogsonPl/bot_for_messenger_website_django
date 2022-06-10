@@ -122,13 +122,13 @@ def make_bet(request):
             return JsonResponse({"status:": 1})
         else:
             status = 0
-            result, message, won_money, lucky_number = casino_actions.make_bet(player, percent_to_win, wage)
-            bet = BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=lucky_number,
-                                             amount=wage, win=result, money=won_money)
+            bet_data = casino_actions.make_bet(player, percent_to_win, wage)
+            bet = BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=bet_data.lucky_number,
+                                             amount=wage, win=bet_data.result, money=bet_data.won_money)
 
-            return JsonResponse({"status": status, "message": message, "player_money": format_money(player.money),
+            return JsonResponse({"status": status, "message": bet_data.message, "player_money": format_money(player.money),
                                  "date": "Now", "amount": "%.5f" % wage, "user_number": percent_to_win,
-                                 "drown_number": lucky_number, "win": result, "money": bet.money})
+                                 "drown_number": bet_data.lucky_number, "win": bet_data.result, "money": bet.money})
     else:
         return JsonResponse({"status": "forbidden"})
 
@@ -148,9 +148,10 @@ def make_bet_fb(request):
         elif not 1 <= percent_to_win <= 90:
             message = "🚫 Możesz mieć od 1% do 90% na wygraną"
         else:
-            result, message, won_money, lucky_number = casino_actions.make_bet(player, percent_to_win, wage)
-            BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=lucky_number,
-                                       amount=wage, win=result, money=won_money)
+            bet_data = casino_actions.make_bet(player, percent_to_win, wage)
+            BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=bet_data.lucky_number,
+                                       amount=wage, win=bet_data.result, money=bet_data.won_money)
+            message = bet_data.message
 
     return JsonResponse({"message": message})
 

@@ -8,6 +8,8 @@ import json
 from asgiref.sync import async_to_sync
 import random as rd
 from collections import Counter
+from dataclasses import dataclass
+from typing import Tuple, Union
 
 from django.db import transaction, ProgrammingError
 from django.db.models import ObjectDoesNotExist
@@ -67,7 +69,7 @@ SLOTS_PRIZE = {
 }
 
 
-def set_daily(player) -> str:
+def set_daily(player: CasinoPlayers) -> str:
     if cache.get("performing_daily_reset"):
         return """💤 Obecnie jest wykonywany reset, spróbuj ponownie za kilka sekund"""
     if not player.take_daily:
@@ -99,7 +101,15 @@ Twój daily strike to {player.daily_strike}"""
     return message
 
 
-def make_bet(player, percent_to_win: int, wage: float):
+
+@dataclass
+class BetData:
+    result: int
+    message: str
+    won_money: Decimal
+    lucky_number: float
+
+def make_bet(player: CasinoPlayers, percent_to_win: int, wage: float) -> BetData:
     """
     result 0 --> player lost
     result 1 --> player won
@@ -151,10 +161,10 @@ def make_bet(player, percent_to_win: int, wage: float):
     player.save()
 
     send_bet_signal(str(player), wage, percent_to_win, lucky_number, result, float(won_money))
-    return result, message, won_money, lucky_number
+    return BetData(result, message, won_money, lucky_number)
 
 
-def update_the_biggest_win(player, won_money, percent_to_win, wage):
+def update_the_biggest_win(player: CasinoPlayers, won_money: Decimal, percent_to_win: int, wage: float):
     cache.set("max_bet_win", won_money, None)
     data = cache.get("data")
     data["max_bet_win"]["prize"] = float(won_money)
@@ -166,7 +176,7 @@ def update_the_biggest_win(player, won_money, percent_to_win, wage):
 
 
 @transaction.atomic
-def buy_ticket(player, tickets_to_buy: int) -> int:
+def buy_ticket(player: CasinoPlayers, tickets_to_buy: int) -> int:
     """
     the ticket costs 1 dogecoin
     status 0 --> player bought tickets
@@ -187,7 +197,7 @@ def buy_ticket(player, tickets_to_buy: int) -> int:
     return status
 
 
-def buy_scratch_card(player):
+def buy_scratch_card(player: CasinoPlayers):
     if player.money < 5:
         return "🚫 Nie masz wystarczająco dogecoinów by kupić zdrapke, koszt zdrapki to 5 dogecoinów"
     message = ""
@@ -240,7 +250,7 @@ def get_random_number() -> float:
     return random
 
 
-def send_bet_signal(player_name, wage, lucky_number, drawn_number, result, won_money):
+def send_bet_signal(player_name: str, wage: float, lucky_number: int, drawn_number: float, result: int, won_money: Decimal):
     bet_info = [player_name, "%.5f" % wage, lucky_number, drawn_number, result, "%.3f" % won_money]
     channel_layer = channels.layers.get_channel_layer()
     async_to_sync(channel_layer.group_send)(
@@ -250,7 +260,7 @@ def send_bet_signal(player_name, wage, lucky_number, drawn_number, result, won_m
         })
 
 
-def shop(player, item_id):
+def shop(player: CasinoPlayers, item_id: int):
     try:
         shop_item = shop_obj.SHOP_ITEMS[int(item_id)-1]
         if shop_item["cost"] < player.legendary_dogecoins:
@@ -266,7 +276,7 @@ def shop(player, item_id):
     return message, bought
 
 
-def slots_game(player):
+def slots_game(player: CasinoPlayers) -> Tuple[str, list, Union[int, None]]:
     if player.money < 5:
         return f"🚫 Zagranie kostuje 5 dogów, a masz {format_money(player.money)} dogów", [], None
 

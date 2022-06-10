@@ -4,7 +4,7 @@ import random as rd
 import bisect
 from decimal import Decimal, getcontext
 
-from django.db import transaction, ProgrammingError
+from django.db import transaction
 from django.db.utils import ProgrammingError, OperationalError
 from django.db.models import Sum, F, ObjectDoesNotExist
 from django.conf import settings
@@ -118,12 +118,12 @@ def reset_daily():
     cache.set("performing_daily_reset", True, None)
     now = datetime.now(tz=pytz.timezone(settings.TIME_ZONE))
 
-    CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
-    AchievementsPlayerLinkTable.objects.filter(achievement=BOUGHT_SCRATCHES_IN_ONE_DAY).update(player_score=0)
-    for i in AchievementsPlayerLinkTable.objects.filter(achievement=DAILY_STRIKE_ACHIEVEMENT):
-        if not i.player.take_daily:
-            i.player_score = 0
-            i.save()
+    #CasinoPlayers.objects.filter(take_daily=False).update(daily_strike=0)
+    #AchievementsPlayerLinkTable.objects.filter(achievement=BOUGHT_SCRATCHES_IN_ONE_DAY).update(player_score=0)
+    #for i in AchievementsPlayerLinkTable.objects.filter(achievement=DAILY_STRIKE_ACHIEVEMENT):
+    #    if not i.player.take_daily:
+    #        i.player_score = 0
+    #        i.save()
     if now.day == 1:
         try:
             first_player, second_player, third_player = CasinoPlayers.objects.all().order_by('-money')[:3]
