@@ -37,6 +37,7 @@ class CasinoPlayers(models.Model):
     faster_scratch_time = models.DateTimeField(default=datetime.now(tz=pytz.timezone(settings.TIME_ZONE)), blank=False, null=False)
     lower_lucky_number_time = models.DateTimeField(default=datetime.now(tz=pytz.timezone(settings.TIME_ZONE)), blank=False, null=False)
     bigger_win_time = models.DateTimeField(default=datetime.now(tz=pytz.timezone(settings.TIME_ZONE)), blank=False, null=False)
+    flags_points = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name = "Player"
