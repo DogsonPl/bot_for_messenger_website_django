@@ -117,9 +117,9 @@ def make_bet(player: CasinoPlayers, percent_to_win: int, wage: float) -> BetData
     message = ""
     lucky_number = get_random_number()
     if player.lower_lucky_number_time > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)):
-        lucky_number -= 4
+        lucky_number -= 1
         lucky_number = round(lucky_number, 2)
-        message += "Będziesz miał zmniejszoną losowaną liczbe o 5 jeszcze przez " + str(player.lower_lucky_number_time - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7] + "\n\n"
+        message += "Będziesz miał/a zmniejszoną losowaną liczbe o 1 jeszcze przez " + str(player.lower_lucky_number_time - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7] + "\n\n"
     if lucky_number >= percent_to_win:
         player.lost_bets += 1
         result = 0
@@ -137,8 +137,8 @@ def make_bet(player: CasinoPlayers, percent_to_win: int, wage: float) -> BetData
         result = 1
         won_money = Decimal(((wage / (percent_to_win / 100)) - wage) * 0.99)
         if player.bigger_win_time > datetime.now(tz=pytz.timezone(settings.TIME_ZONE)):
-            won_money *= Decimal(1.05)
-            message += "Twoje wygrane będą powiększane o 10% jeszcze przez " + str(player.bigger_win_time - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7] + "\n\n"
+            won_money *= Decimal(1.01)
+            message += "Twoje wygrane będą powiększane o 1% jeszcze przez " + str(player.bigger_win_time - datetime.now(tz=pytz.timezone(settings.TIME_ZONE)))[2:7] + "\n\n"
         player.money += won_money
         player.won_dc += won_money
         message += f"<strong>📈 𝗪𝘆𝗴𝗿𝗮𝗻𝗼 {'%.2f' % won_money} dogecoinów</strong>."
