@@ -11,7 +11,8 @@ import pytz
 
 from .models import CasinoPlayers, BetsHistory, Jackpot
 from .forms import BetForm, JackpotForm
-from .utils import check_post_password, format_money, count_scratch_card_timeout, check_boost_time
+from .utils import check_post_password
+from . import utils
 from . import casino_actions
 from .shop import Shop
 
@@ -60,7 +61,7 @@ def index(request):
             minutes = 10
         else:
             minutes = 20
-        scratch_timeout = count_scratch_card_timeout(player, minutes)
+        scratch_timeout = utils.count_scratch_card_timeout(player, minutes)
 
         boost_timers = []
         shop_faster_scratch_time = player.faster_scratch_time - now
@@ -70,7 +71,7 @@ def index(request):
         shop_bigger_win_time = player.bigger_win_time - now
         boost_timers.append(shop_bigger_win_time)
 
-        boost_timers = [check_boost_time(i) for i in boost_timers]
+        boost_timers = [utils.check_boost_time(i) for i in boost_timers]
         shop_items_ = list(zip(shop_items, boost_timers))
         return render(request, "casino/index.html", {"nav_bar": "casino",
                                                      "bet_form": bet_form,
@@ -91,7 +92,9 @@ def set_daily(request):
     if request.method == "POST" and request.user.is_authenticated:
         player = CasinoPlayers.objects.get(user=request.user)
         message = casino_actions.set_daily(player)
-        return JsonResponse({"player_money": format_money(player.money), "daily_strike": player.daily_strike, "received": message})
+        return JsonResponse({"player_money": utils.format_money(player.money),
+                             "daily_strike": player.daily_strike,
+                             "received": message})
     else:
         return JsonResponse({"status": "forbidden"})
 
@@ -126,9 +129,15 @@ def make_bet(request):
             bet = BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=bet_data.lucky_number,
                                              amount=wage, win=bet_data.result, money=bet_data.won_money)
 
-            return JsonResponse({"status": status, "message": bet_data.message, "player_money": format_money(player.money),
-                                 "date": "Now", "amount": "%.5f" % wage, "user_number": percent_to_win,
-                                 "drown_number": bet_data.lucky_number, "win": bet_data.result, "money": bet.money})
+            return JsonResponse({"status": status,
+                                 "message": bet_data.message,
+                                 "player_money": utils.format_money(player.money),
+                                 "date": "Now",
+                                 "amount": "%.5f" % wage,
+                                 "user_number": percent_to_win,
+                                 "drown_number": bet_data.lucky_number,
+                                 "win": bet_data.result,
+                                 "money": bet.money})
     else:
         return JsonResponse({"status": "forbidden"})
 
@@ -162,7 +171,9 @@ def jackpot_buy(request):
         player = CasinoPlayers.objects.get(user=request.user)
         tickets_to_buy = abs(int(request.POST["tickets"]))
         status = casino_actions.buy_ticket(player, tickets_to_buy)
-        return JsonResponse({"status": status, "tickets": tickets_to_buy, "player_money": format_money(player.money)})
+        return JsonResponse({"status": status,
+                             "tickets": tickets_to_buy,
+                             "player_money": utils.format_money(player.money)})
     else:
         return JsonResponse({"status": "forbidden"})
 
@@ -180,7 +191,7 @@ def jackpot_buy_fb(request):
         if status == 0:
             message = f"✅ Kupiono {tickets_to_buy} biletów za {tickets_to_buy} dogecoinów. Użyj komendy !jacpkot żeby dostać więcej informacji"
         elif status == 1:
-            message = f"🚫 Nie masz wystarczająco dogecoinów (chciałeś kupić {tickets_to_buy} biletów, a masz {format_money(player.money)} dogecoinów)"
+            message = f"🚫 Nie masz wystarczająco dogecoinów (chciałeś kupić {tickets_to_buy} biletów, a masz {utils.format_money(player.money)} dogecoinów)"
         else:
             message = "💤 Obecnie trwa losowanie, spróbuj za kilka sekund"
     return JsonResponse({"message": message})
@@ -192,8 +203,10 @@ def buy_scratch_card(request):
         message = casino_actions.buy_scratch_card(player)
         now = datetime.now(tz=pytz.timezone(settings.TIME_ZONE))
         shop_faster_scratch_time = player.faster_scratch_time - now
-        _, scratch_boost = check_boost_time(shop_faster_scratch_time)
-        return JsonResponse({"message": message, "player_money": format_money(player.money), "scratch_boost": scratch_boost})
+        _, scratch_boost = utils.check_boost_time(shop_faster_scratch_time)
+        return JsonResponse({"message": message,
+                             "player_money": utils.format_money(player.money),
+                             "scratch_boost": scratch_boost})
     else:
         return JsonResponse({"status": "forbidden"})
 
@@ -256,7 +269,7 @@ def slots(request):
         message, numbers, most_common_num = casino_actions.slots_game(player)
         return JsonResponse({"message": message,
                              "nums": numbers,
-                             "player_money": format_money(player.money),
+                             "player_money": utils.format_money(player.money),
                              "most_common_num": most_common_num})
     else:
         return JsonResponse({"status": "forbidden"})
@@ -272,6 +285,26 @@ def slots_fb(request):
             message = FB_REGISTER_ACCOUNT_MESSAGE
         else:
             message, numbers, most_common_num = casino_actions.slots_game(player)
+        return JsonResponse({"message": message})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
+@csrf_exempt
+@check_post_password
+def connect_mail_with_fb(request):
+    if request.method == "POST":
+        message = utils.connect_mail_with_fb(request.POST["email"], request.POST["user_fb_id"])
+        return JsonResponse({"message": message})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
+@csrf_exempt
+@check_post_password
+def connect_mail_with_dogsonki_app(request):
+    if request.method == "POST":
+        message = utils.connect_mail_with_fb(request.POST["email"], request.POST["user_dogsonki_app_id"])
         return JsonResponse({"message": message})
     else:
         return JsonResponse({"status": "forbidden"})

@@ -18,5 +18,7 @@ urlpatterns = [
     path("shop", views.shop, name="shop"),
     path("shop_fb", views.shop_fb, name="shop_fb"),
     path("slots", views.slots, name="slots"),
-    path("slots_fb", views.slots_fb, name="slots_fb")
+    path("slots_fb", views.slots_fb, name="slots_fb"),
+    path("connect_mail_with_fb", views.connect_mail_with_fb, name="connect_mail_with_fb"),
+    path("connect_mail_with_dogsonki_app", views.connect_mail_with_dogsonki_app, name="connect_mail_with_dogsonki_app")
 ]

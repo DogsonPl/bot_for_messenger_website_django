@@ -14,8 +14,10 @@ class CasinoPlayers(models.Model):
                                 related_name="user")
     user_fb_id = models.CharField(unique=True, max_length=20, blank=True, null=True)
     user_discord_id = models.CharField(unique=True, max_length=20, blank=True, null=True)
+    user_dogsonki_app_id = models.CharField(unique=True, max_length=20, blank=True, null=True)
     fb_name = models.CharField(max_length=75, blank=True, null=True)
     discord_name = models.CharField(max_length=75, blank=True, null=True)
+    dogsonki_app_name = models.CharField(max_length=75, blank=True, null=True)
     money = models.DecimalField(default=0, decimal_places=10, max_digits=20)
     email = models.EmailField(unique=True, blank=True, null=True, max_length=100)
     take_daily = models.BooleanField(default=0)
@@ -47,6 +49,8 @@ class CasinoPlayers(models.Model):
     def __str__(self):
         if self.user:
             return str(self.user)
+        elif self.dogsonki_app_name:
+            return str(self.dogsonki_app_name)
         elif self.fb_name:
             return self.fb_name
         else:
