@@ -111,6 +111,14 @@ def set_daily_fb(request):
     return JsonResponse({"message": message})
 
 
+@csrf_exempt
+@check_post_password
+def set_daily_dm(request):
+    player = CasinoPlayers.objects.get(user_dogsonki_app_id=request.POST["user_dogsonki_app_id"])
+    message = casino_actions.set_daily(player)
+    return JsonResponse({"message": message})
+
+
 def make_bet(request):
     if request.method == "POST" and request.user.is_authenticated:
         try:
@@ -165,6 +173,25 @@ def make_bet_fb(request):
     return JsonResponse({"message": message})
 
 
+def make_bet_dm(request):
+    try:
+        wage = abs(float(request.POST["bet_money"]))
+        percent_to_win = abs(int(request.POST["percent_to_win"]))
+    except ValueError:
+        return "🚫 Po !bet musisz podać stawkę i procent na wygraną, np !bet 4 20"
+    player = CasinoPlayers.objects.get(user_dogsonki_app_id=request.POST["user_dogsonki_app_id"])
+    if player.money < wage:
+        message = "🚫 Nie masz wystarczająco pieniędzy"
+    elif not 1 <= percent_to_win <= 90:
+        message = "🚫 Możesz mieć od 1% do 90% na wygraną"
+    else:
+        bet_data = casino_actions.make_bet(player, percent_to_win, wage)
+        BetsHistory.objects.create(player=player, user_number=percent_to_win, drown_number=bet_data.lucky_number,
+                                   amount=wage, win=bet_data.result, money=bet_data.won_money)
+        message = bet_data.message
+    return JsonResponse({"message": message})
+
+
 @transaction.atomic
 def jackpot_buy(request):
     if request.method == "POST" and request.user.is_authenticated:
@@ -194,6 +221,24 @@ def jackpot_buy_fb(request):
             message = f"🚫 Nie masz wystarczająco dogecoinów (chciałeś kupić {tickets_to_buy} biletów, a masz {utils.format_money(player.money)} dogecoinów)"
         else:
             message = "💤 Obecnie trwa losowanie, spróbuj za kilka sekund"
+    return JsonResponse({"message": message})
+
+
+@csrf_exempt
+@check_post_password
+def jackpot_buy_dm(request):
+    player = CasinoPlayers.objects.get(user_dogsonki_app_id=request.POST["user_dogsonki_app_id"])
+    try:
+        tickets_to_buy = abs(int(request.POST["tickets"]))
+    except ValueError:
+        return "🚫 Po !jackpotbuy napisz ile chcesz kupić biletów, np !jackpotbuy 1"
+    status = casino_actions.buy_ticket(player, tickets_to_buy)
+    if status == 0:
+        message = f"✅ Kupiono {tickets_to_buy} biletów za {tickets_to_buy} dogecoinów. Użyj komendy !jacpkot żeby dostać więcej informacji"
+    elif status == 1:
+        message = f"🚫 Nie masz wystarczająco dogecoinów (chciałeś kupić {tickets_to_buy} biletów, a masz {utils.format_money(player.money)} dogecoinów)"
+    else:
+        message = "💤 Obecnie trwa losowanie, spróbuj za kilka sekund"
     return JsonResponse({"message": message})
 
 
@@ -228,13 +273,39 @@ def buy_scratch_card_fb(request):
 
 @csrf_exempt
 @check_post_password
+def buy_scratch_card_dm(request):
+    if request.method == "POST":
+        player = CasinoPlayers.objects.get(user_dogsonki_app_id=request.POST["user_dogsonki_app_id"])
+        message = casino_actions.buy_scratch_card(player)
+        return JsonResponse({"message": message})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
+@csrf_exempt
+@check_post_password
 def create_account_fb(request):
-    try:
-        CasinoPlayers.objects.create(user_fb_id=request.POST["user_fb_id"], fb_name=request.POST["fb_name"])
-        message = "✅ Pomyślnie się zarejestrowano. Jest możliwa integracja ze stroną www (https://dogson.ovh). Po więcej informacji napisz !strona"
-    except IntegrityError:
-        message = "🚫 Masz już założone konto"
-    return JsonResponse({"message": message})
+    if request.method == "POST":
+        try:
+            CasinoPlayers.objects.create(user_fb_id=request.POST["user_fb_id"], fb_name=request.POST["fb_name"])
+            message = "✅ Pomyślnie się zarejestrowano. Jest możliwa integracja ze stroną www (https://dogson.ovh). Po więcej informacji napisz !strona"
+        except IntegrityError:
+            message = "🚫 Masz już założone konto"
+        return JsonResponse({"message": message})
+
+
+@csrf_exempt
+@check_post_password
+def create_account_dm(request):
+    if request.method == "POST":
+        try:
+            player = CasinoPlayers.objects.get(email=request.POST["email"])
+        except ObjectDoesNotExist:
+            player = CasinoPlayers.objects.create(email=request.POST["email"])
+        player.user_dogsonki_app_id = request.POST["user_dogsonki_app_id"]
+        player.dogsonki_app_name = request.POST["nick"]
+        player.save()
+        return JsonResponse({"message": "done"})
 
 
 def shop(request):
@@ -263,6 +334,18 @@ def shop_fb(request):
         return JsonResponse({"status": "forbidden"})
 
 
+@csrf_exempt
+@check_post_password
+def shop_dm(request):
+    if request.method == "POST":
+        player = CasinoPlayers.objects.get(user_dogsonki_app_id=request.POST["user_dogsonki_app_id"])
+        item_id = request.POST["item_id"]
+        message, bought = casino_actions.shop(player, item_id)
+        return JsonResponse({"message": message})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
 def slots(request):
     if request.method == "POST":
         player = CasinoPlayers.objects.get(user=request.user)
@@ -285,6 +368,17 @@ def slots_fb(request):
             message = FB_REGISTER_ACCOUNT_MESSAGE
         else:
             message, numbers, most_common_num = casino_actions.slots_game(player)
+        return JsonResponse({"message": message})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
+@csrf_exempt
+@check_post_password
+def slots_dm(request):
+    if request.method == "POST":
+        player = CasinoPlayers.objects.get(user_dogsonki_app_id=request.POST["user_dogsonki_app_id"])
+        message, numbers, most_common_num = casino_actions.slots_game(player)
         return JsonResponse({"message": message})
     else:
         return JsonResponse({"status": "forbidden"})
