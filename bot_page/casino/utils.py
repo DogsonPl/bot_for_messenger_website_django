@@ -52,7 +52,6 @@ def connect_mail_with_fb(email: str, user_fb_id: str) -> str:
     except IntegrityError:
         fb_name = player_old.fb_name
         player_old.delete()
-        player_old.save()
         player = CasinoPlayers.objects.get(email=email)
         player.user_fb_id = user_fb_id
         player.fb_name = fb_name
@@ -69,7 +68,6 @@ def connect_mail_dogsonki_app(email: str, user_dogsonki_app_id: str) -> str:
     except IntegrityError:
         dogsonki_app_name = player_old.dogsonki_app_name
         player_old.delete()
-        player_old.save()
         player = CasinoPlayers.objects.get(email=email)
         player.user_dogsonki_app_id = user_dogsonki_app_id
         player.dogsonki_app_name = dogsonki_app_name
