@@ -27,5 +27,6 @@ urlpatterns = [
     path("slots_fb", views.slots_fb, name="slots_fb"),
     path("slots_dm", views.slots_fb, name="slots_dm"),
     path("connect_mail_with_fb", views.connect_mail_with_fb, name="connect_mail_with_fb"),
-    path("connect_mail_with_dogsonki_app", views.connect_mail_with_dogsonki_app, name="connect_mail_with_dogsonki_app")
+    path("connect_mail_with_dogsonki_app", views.connect_mail_with_dogsonki_app, name="connect_mail_with_dogsonki_app"),
+    path("get_spotify_data", views.get_spotify_data, name="get_spotify_data")
 ]

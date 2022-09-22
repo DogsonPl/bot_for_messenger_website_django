@@ -215,3 +215,11 @@ HCAPTCHA_SECRET = config_parser.get("hcaptcha", "hcaptcha_secret")
 AUTH_USER_MODEL = 'login.User'
 
 ASGI_APPLICATION = "bot_page.asgi.application"
+
+SPOTIPY_CLIENT_ID = config_parser.get("spotify", "client_id")
+SPOTIPY_CLIENT_SECRET = config_parser.get("spotify", "client_secret")
+if DEBUG:
+    SPOTIPY_REDIRECT_URI = "http://127.0.0.1:8000/spotify_connected"
+else:
+    SPOTIPY_REDIRECT_URI = config_parser.get("spotify", "redirect_uri")
+SPOTIPY_SCOPE = "user-read-currently-playing user-read-playback-state user-read-recently-played user-top-read user-read-playback-position user-read-private"

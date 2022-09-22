@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import pytz
+import spotipy
 
 from .models import CasinoPlayers, BetsHistory, Jackpot
 from .forms import BetForm, JackpotForm
@@ -16,8 +17,12 @@ from . import utils
 from . import casino_actions
 from .shop import Shop
 
+MEDALS = ["🥇", "🥈", "🥉", "🏅"]
 shop_items = Shop().SHOP_ITEMS
-
+SPOTIPY_SCOPE = settings.SPOTIPY_SCOPE
+SPOTIPY_CLIENT_ID = settings.SPOTIPY_CLIENT_ID
+SPOTIPY_CLIENT_SECRET = settings.SPOTIPY_CLIENT_SECRET
+SPOTIPY_REDIRECT_URI = settings.SPOTIPY_REDIRECT_URI
 
 FB_REGISTER_ACCOUNT_MESSAGE = "💡 Użyj polecenia !register żeby móc się bawić w kasyno. Wszystkie dogecoiny są sztuczne"
 
@@ -399,6 +404,77 @@ def connect_mail_with_fb(request):
 def connect_mail_with_dogsonki_app(request):
     if request.method == "POST":
         message = utils.connect_mail_with_fb(request.POST["email"], request.POST["user_dogsonki_app_id"])
+        return JsonResponse({"message": message})
+    else:
+        return JsonResponse({"status": "forbidden"})
+
+
+@csrf_exempt
+def get_spotify_data(request):
+    message = ""
+    if request.method == "POST":
+        player = CasinoPlayers.objects.get(user_fb_id=request.POST["user_fb_id"])
+        if player.user.id:
+            auth_manager = spotipy.oauth2.SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID, client_secret=SPOTIPY_CLIENT_SECRET,
+                                                       redirect_uri=SPOTIPY_REDIRECT_URI, scope=SPOTIPY_SCOPE,
+                                                       username=f"{player.user.id}")
+            if player.spotify_token:
+                try:
+                    token = auth_manager.get_access_token(player.spotify_token)
+                    spotify_data = spotipy.Spotify(auth=token["access_token"])
+                except spotipy.SpotifyOauthError:
+                    pass
+                else:
+                    user_info = spotify_data.me()
+                    message += f"𝗧𝘄𝗼𝗷𝗮 𝗻𝗮𝘇𝘄𝗮: {user_info['display_name']}\n𝗧𝘆𝗽 𝗸𝗼𝗻𝘁𝗮 𝘀𝗽𝗼𝘁𝗶𝗳𝘆: {user_info['product']}"
+                    currently_playing = spotify_data.currently_playing()
+                    try:
+                        authors = [i['name'] for i in currently_playing['item']['artists']]
+                        authors = " + ".join(authors)
+                        song_name = currently_playing['item']['name']
+                    except TypeError:
+                        # user is not playing any song at the moment
+                        song_name = "Nic"
+                        authors = ""
+                    message += f"\n𝗢𝗯𝗲𝗰𝗻𝗶𝗲 𝗻𝗮𝗽𝗶𝗲𝗿𝗱𝗮𝗹𝗮: 🔊 {song_name} - {authors}"
+                    recently_played = spotify_data.current_user_recently_played(limit=4)
+
+                    message += "\n𝗢𝘀𝘁𝗮𝘁𝗻𝗶𝗼 𝗻𝗮𝗽𝗶𝗲𝗿𝗱𝗮𝗹𝗮𝗹𝗼:\n"
+                    for i in recently_played["items"]:
+                        authors = [i['name'] for i in i['track']['album']['artists']]
+                        authors = " + ".join(authors)
+                        song_name = i['track']['name']
+                        message += f"🎧 {song_name} - {authors}\n"
+
+                    message += "\n𝗨𝗹𝘂𝗯𝗶𝗲𝗻𝗶 𝘄𝘆𝗸𝗼𝗻𝗮𝘄𝗰𝘆\nOstatnio:\n"
+                    user_top_artists = spotify_data.current_user_top_artists(limit=3, time_range="short_term")
+                    for i, medal in zip(user_top_artists["items"], MEDALS):
+                        genres = [i for i in i["genres"]]
+                        genres = ", ".join(genres)
+                        message += f"{medal} {i['name']} ({genres})\n"
+
+                    message += "Lifetime:\n"
+                    user_top_artists = spotify_data.current_user_top_artists(limit=3, time_range="long_term")
+                    for i, medal in zip(user_top_artists["items"], MEDALS):
+                        genres = [i for i in i["genres"]]
+                        genres = ", ".join(genres)
+                        message += f"{medal} {i['name']} ({genres})\n"
+
+                    message += "\n𝗨𝗹𝘂𝗯𝗶𝗲𝗻𝗶𝗲 𝗽𝗶𝗼𝘀𝗲𝗻𝗸𝗶\nOstatnio:\n"
+                    user_top_tracks = spotify_data.current_user_top_tracks(limit=3, time_range="short_term")
+                    for i, medal in zip(user_top_tracks["items"], MEDALS):
+                        authors = [i['name'] for i in i['album']['artists']]
+                        authors = " + ".join(authors)
+                        message += f"{medal} {i['name']} - {authors}\n"
+
+                    message += "Lifetime:\n"
+                    user_top_tracks = spotify_data.current_user_top_tracks(limit=3, time_range="long_term")
+                    for i, medal in zip(user_top_tracks["items"], MEDALS):
+                        authors = [i['name'] for i in i['album']['artists']]
+                        authors = " + ".join(authors)
+                        message += f"{medal} {i['name']} - {authors}\n"
+        if not message:
+            message = "💡 Jeśli chcesz korzystać z tej komendy, napisz do twórcy (komenda !tworca)"
         return JsonResponse({"message": message})
     else:
         return JsonResponse({"status": "forbidden"})
