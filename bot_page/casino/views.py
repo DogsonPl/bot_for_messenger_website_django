@@ -414,11 +414,12 @@ def get_spotify_data(request):
     message = ""
     if request.method == "POST":
         player = CasinoPlayers.objects.get(user_fb_id=request.POST["user_fb_id"])
-        if player.user.id:
-            auth_manager = spotipy.oauth2.SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID, client_secret=SPOTIPY_CLIENT_SECRET,
-                                                       redirect_uri=SPOTIPY_REDIRECT_URI, scope=SPOTIPY_SCOPE,
-                                                       username=f"{player.user.id}")
+        if player.user:
             if player.spotify_token:
+                auth_manager = spotipy.oauth2.SpotifyOAuth(client_id=SPOTIPY_CLIENT_ID,
+                                                           client_secret=SPOTIPY_CLIENT_SECRET,
+                                                           redirect_uri=SPOTIPY_REDIRECT_URI, scope=SPOTIPY_SCOPE,
+                                                           username=f"{player.user.id}")
                 try:
                     token = auth_manager.get_access_token(player.spotify_token)
                     spotify_data = spotipy.Spotify(auth=token["access_token"])
