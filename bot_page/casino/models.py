@@ -40,7 +40,7 @@ class CasinoPlayers(models.Model):
     lower_lucky_number_time = models.DateTimeField(default=datetime.now(tz=pytz.timezone(settings.TIME_ZONE)), blank=False, null=False)
     bigger_win_time = models.DateTimeField(default=datetime.now(tz=pytz.timezone(settings.TIME_ZONE)), blank=False, null=False)
     flags_points = models.PositiveIntegerField(default=0)
-    spotify_token = models.CharField(max_length=500, default=None, null=True)
+    spotify_token = models.CharField(max_length=500, default=None, null=True, blank=True)
 
     class Meta:
         verbose_name = "Player"
