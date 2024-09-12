@@ -25,7 +25,15 @@ Date.prototype.myCustomDate = function(){
     return "" + this.getDate() + " " + this.monthName() + " " + this.getFullYear()
 }
 Date.prototype.myCustomDateTime = function(){
-    return "" + this.getDate() + " " + this.monthName() + " " + this.getHours() + ":" + this.getMinutes()
+    let hour = this.getHours()
+    let minute = this.getMinutes()
+    if(hour <= 9){
+        hour = "0" + hour
+    }
+    if(minute <= 9){
+        minute = "0" + minute
+    }
+    return "" + this.getDate() + " " + this.monthName() + " " + hour + ":" + minute
 }
 
 

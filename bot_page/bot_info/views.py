@@ -44,7 +44,7 @@ def index(request):
     last_jackpots_wins = JackpotsResults.objects.all()
     last_jackpots_wins = serialize_to_json(last_jackpots_wins, 5)
     users_total_money_history = UsersTotalMoneyHistory.objects.all()
-    users_total_money_history = serialize_to_json(users_total_money_history)
+    users_total_money_history = serialize_to_json(users_total_money_history, 50)
 
     try:
         coins_sum = int(CasinoPlayers.objects.aggregate(total=Sum("money"))["total"])
